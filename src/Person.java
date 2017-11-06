@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public abstract class Person {
 
 	public static final int PHONE_NUM_LENGTH = 10;
@@ -246,10 +248,39 @@ public abstract class Person {
 
 	}
 
+	/**
+	 * abstract addMessage method to add a message
+	 * 
+	 * @param message
+	 *            - Message to add
+	 */
 	public abstract void addMessage(Message message);
 
+	/**
+	 * abstract method to send message.
+	 * 
+	 * @param userType
+	 *            - User to send message to
+	 * @return - true or false
+	 */
 	public abstract boolean sendMessage(String userType);
 
+	/**
+	 * abstract method to view message
+	 * 
+	 * @return array of messages to display
+	 */
 	public abstract Message[] viewMessage();
+
+	/*
+	 * Create and return string represntation of the class
+	 *
+	 * @return - String representation
+	 */
+	@Override
+	public String toString() {
+		return "Person [userID=" + userID + ", firstName=" + firstName + ", lastName=" + lastName + ", emailAddress="
+				+ emailAddress + ", phoneNumber=" + phoneNumber + ", messages=" + Arrays.toString(messages) + "]";
+	}
 
 }
