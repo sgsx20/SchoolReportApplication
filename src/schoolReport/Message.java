@@ -1,3 +1,4 @@
+package schoolReport;
 public class Message {
 
 	public static final int ZERO = 0;
