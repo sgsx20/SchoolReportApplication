@@ -1,3 +1,4 @@
+package schoolReport;
 public class Student extends Person {
 
 	// Constants

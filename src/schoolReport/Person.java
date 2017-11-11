@@ -1,3 +1,4 @@
+package schoolReport;
 import java.util.Arrays;
 
 public abstract class Person {
@@ -26,10 +27,15 @@ public abstract class Person {
 	 * the system.
 	 *
 	 * @param firstName
+	 *            -> First name
 	 * @param lastName
+	 *            -> Last name
 	 * @param emailAddress
+	 *            -> Email
 	 * @param phoneNumber
+	 *            -> Phone number
 	 * @param messages
+	 *            -> Messages
 	 */
 	public Person(String firstName, String lastName, String emailAddress, String phoneNumber, Message[] messages) {
 		this.firstName = firstName;
@@ -250,7 +256,7 @@ public abstract class Person {
 
 	/**
 	 * abstract addMessage method to add a message
-	 * 
+	 *
 	 * @param message
 	 *            - Message to add
 	 */
@@ -258,7 +264,7 @@ public abstract class Person {
 
 	/**
 	 * abstract method to send message.
-	 * 
+	 *
 	 * @param userType
 	 *            - User to send message to
 	 * @return - true or false
@@ -267,13 +273,13 @@ public abstract class Person {
 
 	/**
 	 * abstract method to view message
-	 * 
+	 *
 	 * @return array of messages to display
 	 */
 	public abstract Message[] viewMessage();
 
 	/*
-	 * Create and return string represntation of the class
+	 * Create and return string representation of the class
 	 *
 	 * @return - String representation
 	 */
