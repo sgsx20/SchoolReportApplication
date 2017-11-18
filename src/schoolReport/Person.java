@@ -1,5 +1,6 @@
 package schoolReport;
-import java.util.Arrays;
+
+import java.util.LinkedList;
 
 public abstract class Person {
 
@@ -7,12 +8,12 @@ public abstract class Person {
 	public static final int MAX_MESSAGES = 100;
 
 	// Person Attributes/ variables.
-	private int userID;
+	public static int userID;
 	private String firstName;
 	private String lastName;
 	private String emailAddress;
 	private String phoneNumber;
-	private Message[] messages;
+	private LinkedList<Message> messages;
 
 	/**
 	 * Default constructor. Constructor calls another constructor with initial
@@ -37,21 +38,20 @@ public abstract class Person {
 	 * @param messages
 	 *            -> Messages
 	 */
-	public Person(String firstName, String lastName, String emailAddress, String phoneNumber, Message[] messages) {
+	public Person(String firstName, String lastName, String emailAddress, String phoneNumber,
+			LinkedList<Message> messages) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.emailAddress = emailAddress;
 		this.phoneNumber = phoneNumber;
 
 		if (messages == null) {
-			this.messages = new Message[MAX_MESSAGES];
+			this.messages = new LinkedList<>();
 		} else {
-			// Change later after deciding on the size of the messages array
-			this.messages = new Message[messages.length];
 
-			for (int x = 0; x < this.messages.length; x++) {
-				this.messages[x] = messages[x];
-			}
+			this.messages = new LinkedList<>();
+			this.messages.addAll(messages);
+
 		}
 
 		userID++;
@@ -62,8 +62,8 @@ public abstract class Person {
 	 *
 	 * @return the userID
 	 */
-	public int getUserID() {
-		return this.userID;
+	public static int getUserID() {
+		return userID;
 	}
 
 	/**
@@ -221,13 +221,9 @@ public abstract class Person {
 	 *
 	 * @return the messages
 	 */
-	public Message[] getMessages() {
+	public Object[] getMessages() {
 
-		Message[] temp = new Message[this.messages.length];
-
-		for (int x = 0; x < temp.length; x++) {
-			temp[x] = this.messages[x];
-		}
+		Object[] temp = this.messages.toArray();
 
 		return temp;
 	}
@@ -236,17 +232,13 @@ public abstract class Person {
 	 * @param messages
 	 *            the messages to set
 	 */
-	public boolean setMessages(Message[] messages) {
+	public boolean setMessage(Message messages) {
 
-		if ((messages == null) || (messages.length == 0)) {
+		if ((messages == null)) {
 			return false;
 		} else {
 
-			this.messages = new Message[messages.length];
-
-			for (int x = 0; x < messages.length; x++) {
-				this.messages[x] = messages[x];
-			}
+			this.messages.add(messages);
 
 			return true;
 
@@ -276,7 +268,7 @@ public abstract class Person {
 	 *
 	 * @return array of messages to display
 	 */
-	public abstract Message[] viewMessage();
+	public abstract void viewMessage();
 
 	/*
 	 * Create and return string representation of the class
@@ -286,7 +278,7 @@ public abstract class Person {
 	@Override
 	public String toString() {
 		return "Person [userID=" + userID + ", firstName=" + firstName + ", lastName=" + lastName + ", emailAddress="
-				+ emailAddress + ", phoneNumber=" + phoneNumber + ", messages=" + Arrays.toString(messages) + "]";
+				+ emailAddress + ", phoneNumber=" + phoneNumber + ", messages=" + getMessages() + "]";
 	}
 
 }

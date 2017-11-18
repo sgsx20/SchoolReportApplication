@@ -1,4 +1,7 @@
 package schoolReport;
+
+import java.util.LinkedList;
+
 public class Student extends Person {
 
 	// Constants
@@ -10,7 +13,7 @@ public class Student extends Person {
 
 	// Attributes
 	private int gradeLevel;
-	private Course[] courses;
+	private LinkedList<Course> courses;
 
 	/**
 	 * Default constructor
@@ -28,20 +31,17 @@ public class Student extends Person {
 	 * @param phoneNumber
 	 * @param messages
 	 */
-	public Student(String firstName, String lastName, String emailAddress, String phoneNumber, Message[] messages,
-			int gradeLevel, Course[] courses) {
+	public Student(String firstName, String lastName, String emailAddress, String phoneNumber,
+			LinkedList<Message> messages, int gradeLevel, LinkedList<Course> courses) {
 
 		super(firstName, lastName, emailAddress, phoneNumber, messages);
 		this.gradeLevel = gradeLevel;
 
 		if (courses == null) {
-			// Change later?
-			this.courses = new Course[20];
+			this.courses = new LinkedList<>();
 		} else {
-			this.courses = new Course[courses.length];
-			for (int x = 0; x < courses.length; x++) {
-				this.courses[x] = courses[x];
-			}
+			this.courses = new LinkedList<>();
+			this.courses.addAll(courses);
 		} // else closing bracket
 	}
 
@@ -60,28 +60,38 @@ public class Student extends Person {
 	 * @param gradeLevel
 	 *            the gradeLevel to set
 	 */
-	// public boolean setGradeLevel(int gradeLevel) {
-	// if ((gradeLevel < STUDENT_GRADE_LEVEL_MIN) || (gradeLevel >
-	// STUDENT_GRADE_LEVEL_MAX)) {
-	// return false;
-	// } else {
-	//
-	// }
-	// }
+	public boolean setGradeLevel(int gradeLevel) {
+		if ((gradeLevel < STUDENT_GRADE_LEVEL_MIN) || (gradeLevel > STUDENT_GRADE_LEVEL_MAX)) {
+			return false;
+		} else {
+			this.gradeLevel = gradeLevel;
+			return true;
+		}
+	}
 
 	/**
 	 * @return the courses
 	 */
-	public Course[] getCourses() {
-		return courses;
+	public Object[] getCourses() {
+
+		Object[] temp = this.courses.toArray();
+
+		return temp;
+
 	}
 
 	/**
 	 * @param courses
 	 *            the courses to set
 	 */
-	public void setCourses(Course[] courses) {
-		this.courses = courses;
+	public boolean setCourses(LinkedList<Course> courses) {
+
+		if (courses == null) {
+			return false;
+		} else {
+			this.courses.addAll(courses);
+			return true;
+		}
 	}
 
 	/*
@@ -112,9 +122,9 @@ public class Student extends Person {
 	 * @see applicationPackage.Person#viewMessage()
 	 */
 	@Override
-	public Message[] viewMessage() {
+	public void viewMessage() {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 }

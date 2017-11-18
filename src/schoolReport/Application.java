@@ -1,16 +1,9 @@
 package schoolReport;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-/**
+/*
  * @author Shreejesh Shrestha
  *
  */
@@ -20,34 +13,24 @@ public class Application {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		promptForUserType();
-
 	}
 
-	public static void displayThankYouMessage() {
-		JOptionPane.showMessageDialog(null, "Thank you for using the application. Goodbye!");
-	}
-
-	/**
-	 * The method prompts user for a user type selection.
-	 *
-	 * @return - The type of user that is trying to log in
-	 */
 	public static void promptForUserType() {
 
 		String[] choices = { "Teacher", "Parent", "Student", "Administrator", "Quit" };
-
 		Object result = JOptionPane.showInputDialog(null, "Select User Type", "", JOptionPane.QUESTION_MESSAGE, null,
 				choices, choices[0]);
 
-		String userType = "";
+		// Parse the selection a string
+		String userType = (String) result;
 
-		if ((result == null) || ((String) result).equalsIgnoreCase("Quit")) {
+		// if selection is cancel or quit, display thank you message.
+		if ((result == null) || userType.equalsIgnoreCase("Quit")) {
 			displayThankYouMessage();
 		} else {
+			// Parse selection and send to get log in credentials
 			userType = (String) result;
 			getLoginCredentials(userType);
 		}
@@ -55,18 +38,10 @@ public class Application {
 	}
 
 	public static void getLoginCredentials(String userType) {
-		//
-		// JLabel userNameLabel = new JLabel("Enter username here:");
-		// JTextField enterUserName = new JTextField();
-		// JLabel passwordLabel = new JLabel("Enter password here:");
-		// JPasswordField enterPassword = new JPasswordField();
-		//
-		// Object[] displayToUser = { userNameLabel, enterUserName, passwordLabel,
-		// enterPassword };
 
-
-		int attempt = 0;
 		boolean valid = false;
+		int attempt = 0;
+		boolean back = false;
 
 		do {
 
@@ -74,10 +49,10 @@ public class Application {
 
 			do {
 				try {
-					userId = Integer.parseInt(JOptionPane.showInputDialog("Enter user id"));
+					userId = Integer.parseInt(JOptionPane.showInputDialog("Enter your User ID"));
 					valid = true;
 				} catch (NumberFormatException e) {
-					JOptionPane.showMessageDialog(null, "Invalid input form");
+					JOptionPane.showMessageDialog(null, "Invalid input for User ID. Try again.");
 				}
 
 			} while (!valid);
@@ -88,7 +63,7 @@ public class Application {
 
 			do {
 
-				password = JOptionPane.showInputDialog("Enter password");
+				password = JOptionPane.showInputDialog("Enter your Password");
 
 				if (!password.equalsIgnoreCase("")) {
 					valid = true;
@@ -97,110 +72,141 @@ public class Application {
 			} while (!valid);
 
 			valid = false;
-			// Ok / Cancel option
-			// int enter = JOptionPane.showConfirmDialog(null, displayToUser, "Enter Login
-			// Credentials",
-			// JOptionPane.OK_CANCEL_OPTION);
 
-			// If ok, do something
-			// if (enter == JOptionPane.OK_OPTION) {
-			// if (!enterUserName.getText().equals("") &&
-			// (enterPassword.getPassword().length != 0)) {
-			// System.out.println(enterUserName.getText());
-			// valid = true;
-			// } else {
-			// System.out.println(attempt);
-			// attempt++;
-			// }
-			// } else {
-			// promptForUserType();
-			// }
-
-			boolean verified = verifyCredentials(userId, password, userType);
+			boolean verified = FileManager.checkCredsInFile(userId, password, userType);
 
 			if (verified) {
 				valid = true;
-				// continue
+				back = showMenu(userId, password, userType);
 			} else {
 				attempt++;
+				JOptionPane.showMessageDialog(null, "Invalid credentials entered. Try again!");
 			}
 
 		} while (!valid && (attempt < 3));
 
 		if (attempt == 3) {
-			JOptionPane.showMessageDialog(null, "Maximum attempts reached");
+			JOptionPane.showMessageDialog(null,
+					"Maximum attempts reached! The Administrator will be notified to unlock your account.");
 			displayThankYouMessage();
 		}
 
-		if (valid) {
+		if (back) {
 			promptForUserType();
 		}
 
 	}
 
-	public static void openFile(int userId, String password) {
+	public static boolean showMenu(int userId, String password, String userType) {
 
-		String filePath = "./src/schoolReport/teacherRecords.txt";
-		BufferedReader br = null;
-
-		try {
-			br = new BufferedReader(new FileReader(new File(filePath)));
-
-			String hasLine = null;
-
-			while ((hasLine = br.readLine()) != null) {
-
-				String line = hasLine;
-				String[] split = line.split(",");
-
-				int id = Integer.parseInt(split[0]);
-				String pwd = split[1];
-
-				if (userId == id) {
-
-					if (password.equalsIgnoreCase(pwd)) {
-						System.out.println("Matched");
-					} else {
-						System.out.println("Not found");
-					}
-
-				}
-
-			}
-			br.close();
-		} catch (FileNotFoundException ex) {
-			JOptionPane.showMessageDialog(null, ex.getMessage());
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage());
-		}
-
-
-	}
-
-	public static boolean verifyCredentials(int userId, String password, String userType) {
-
-		boolean valid = false;
+		boolean back = false;
 
 		switch (userType) {
 		case "Teacher":
-			openFile(userId, password);
-			// Open teacher file
-			// valid = verify credentials
-			// Call method that shows the respective menu for the user
-			// Close file
-			// Log out message
-			valid = true;
 			showTeacherMenu(userId);
+			back = true;
+			break;
+		case "Student":
+			showStudentMenu(userId);
+			back = true;
 			break;
 		case "Parent":
-
-		case "Student":
+			back = true;
+			break;
 		case "Administrator":
+			back = true;
+			break;
 		default:
-			JOptionPane.showMessageDialog(null, "Something went wrong");
+			JOptionPane.showMessageDialog(null, "Code should never get till here");
 		}
 
-		return valid;
+		if (back) {
+			loggedOut();
+		}
+
+		return back;
+
+	}
+
+	public static void showStudentMenu(int userId) {
+
+		boolean keepGoing = true;
+
+		do {
+
+			String[] choices = { "View Grade Report", "View Teacher Hours", "View Messages", "Send Message", "Exit" };
+
+			Object result = JOptionPane.showInputDialog(null, "Select a functionality", "",
+					JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
+
+			String selection = (String) result;
+
+			if (result == null) {
+				selection = "Exit";
+			}
+
+			switch (selection) {
+			case "View Grade Report":
+				viewGradeReport();
+				break;
+			case "View Teacher Hours":
+				viewTeacherHours();
+				break;
+			case "View Messages":
+				viewMessages();
+				break;
+			case "Send Message":
+				sendMessage(userId);
+				break;
+			case "Exit":
+				keepGoing = false;
+				break;
+			default:
+				JOptionPane.showMessageDialog(null, "Something went wrong");
+			}
+
+		} while (keepGoing);
+
+	}
+
+	public static void viewGradeReport() {
+
+	}
+
+	public static void viewTeacherHours() {
+
+	}
+
+	public static void viewMessages() {
+
+	}
+
+	public static void sendMessage(int senderID) {
+
+		String[] recipientType = { "Parent", "Student", "Administrator", "Teacher" };
+
+		Object result = JOptionPane.showInputDialog(null, "Select User Type", "", JOptionPane.QUESTION_MESSAGE, null,
+				recipientType, recipientType[0]);
+
+		boolean valid = false;
+		int receipientID = 0;
+
+		do {
+			try {
+				receipientID = Integer.parseInt(JOptionPane.showInputDialog("Enter your ID:"));
+				valid = true;
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(null, ex.getMessage());
+			}
+		} while (!valid);
+
+		String message = "Message to send";
+
+		if (valid) {
+			String userType = (String) result;
+			FileManager.writeToFile(senderID, receipientID, message);
+		}
+
 	}
 
 	public static void showTeacherMenu(int userId) {
@@ -211,8 +217,8 @@ public class Application {
 
 			String[] choices = { "Enter grades", "View Contact", "View Messages", "Send Message", "Exit" };
 
-			Object result = JOptionPane.showInputDialog(null, "Select a functionality", "", JOptionPane.QUESTION_MESSAGE,
-					null, choices, choices[0]);
+			Object result = JOptionPane.showInputDialog(null, "Select a functionality", "",
+					JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
 
 			String selection = (String) result;
 
@@ -239,54 +245,12 @@ public class Application {
 		} while (keepGoing);
 	}
 
-	public static void sendMessage(int senderID) {
-
-		String[] recipientType = { "Parent", "Student", "Administrator", "Teacher" };
-
-		Object result = JOptionPane.showInputDialog(null, "Select User Type", "", JOptionPane.QUESTION_MESSAGE, null,
-				recipientType, recipientType[0]);
-
-		boolean valid = false;
-		int receipientID = 0;
-
-		do {
-			try {
-				receipientID = Integer.parseInt(JOptionPane.showInputDialog("Enter your ID:"));
-				valid = true;
-			} catch (NumberFormatException ex) {
-				JOptionPane.showMessageDialog(null, ex.getMessage());
-			}
-		} while (!valid);
-
-		String message = "Message to send";
-
-		if (valid) {
-			String userType = (String) result;
-			writeToFile(senderID, receipientID, message);
-		}
-
+	public static void displayThankYouMessage() {
+		JOptionPane.showMessageDialog(null, "Thank you for using the application. Goodbye!");
 	}
 
-	public static void writeToFile(int senderID, int receipientID, String message) {
-
-		String filePath = "./src/schoolReport/messages.txt";
-		BufferedWriter bw = null;
-
-		try {
-			bw = new BufferedWriter(new FileWriter(new File(filePath)));
-
-			String newMessage = senderID + "," + receipientID + "," + message + "\n";
-			bw.write(newMessage);
-
-			bw.close();
-		} catch (FileNotFoundException ex) {
-			JOptionPane.showMessageDialog(null, ex.getMessage());
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage());
-		}
-
-
-
+	public static void loggedOut() {
+		JOptionPane.showMessageDialog(null, "You have successfully logged out");
 	}
 
 }

@@ -1,9 +1,11 @@
 package schoolReport;
+
 public class Message {
 
 	public static final int ZERO = 0;
 
 	// Variables
+	private int sender;
 	private int recipient;
 	private String subject;
 	private String message;
@@ -12,7 +14,7 @@ public class Message {
 	 * Default constructor
 	 */
 	public Message() {
-		this(0, null, null);
+		this(0, 0, null, null);
 	}
 
 	/**
@@ -25,10 +27,24 @@ public class Message {
 	 * @param message
 	 *            -> The Message
 	 */
-	public Message(int recipient, String subject, String message) {
+	public Message(int sender, int recipient, String subject, String message) {
+		this.sender = sender;
 		this.recipient = recipient;
 		this.subject = subject;
 		this.message = message;
+	}
+
+	public int getSender() {
+		return this.sender;
+	}
+
+	public boolean setSender(int sender) {
+		if (sender <= ZERO) {
+			return false;
+		} else {
+			this.sender = sender;
+			return true;
+		}
 	}
 
 	/**
