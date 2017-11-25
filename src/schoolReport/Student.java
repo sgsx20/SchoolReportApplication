@@ -1,17 +1,16 @@
 package schoolReport;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Student extends Person {
 
-	// Constants
 	public static final int NUM_OF_COURSES = 8;
 	public static final int STUDENT_GRADE_MIN = 0;
 	public static final int STUDENT_GRADE_MAX = 100;
 	public static final int STUDENT_GRADE_LEVEL_MIN = 8;
 	public static final int STUDENT_GRADE_LEVEL_MAX = 12;
 
-	// Attributes
 	private int gradeLevel;
 	private LinkedList<Course> courses;
 
@@ -19,7 +18,7 @@ public class Student extends Person {
 	 * Default constructor
 	 */
 	public Student() {
-		this("", "", "", "", null, 0, null);
+		this("", "", "", "", "", null, 0, null);
 	}
 
 	/**
@@ -31,10 +30,10 @@ public class Student extends Person {
 	 * @param phoneNumber
 	 * @param messages
 	 */
-	public Student(String firstName, String lastName, String emailAddress, String phoneNumber,
+	public Student(String password, String firstName, String lastName, String emailAddress, String phoneNumber,
 			LinkedList<Message> messages, int gradeLevel, LinkedList<Course> courses) {
 
-		super(firstName, lastName, emailAddress, phoneNumber, messages);
+		super(password, firstName, lastName, emailAddress, phoneNumber, messages);
 		this.gradeLevel = gradeLevel;
 
 		if (courses == null) {
@@ -59,25 +58,38 @@ public class Student extends Person {
 	 *
 	 * @param gradeLevel
 	 *            the gradeLevel to set
+	 * @throws IllegalArgumentException
+	 *             -> Exception if the grade level is not in a valid range
 	 */
 	public boolean setGradeLevel(int gradeLevel) {
 		if ((gradeLevel < STUDENT_GRADE_LEVEL_MIN) || (gradeLevel > STUDENT_GRADE_LEVEL_MAX)) {
-			return false;
+			throw new IllegalArgumentException("Invalid Student Grade Level! (8 - 12) ");
 		} else {
 			this.gradeLevel = gradeLevel;
 			return true;
 		}
 	}
 
-	/**
-	 * @return the courses
-	 */
-	public Object[] getCourses() {
+	public String getCourses() {
 
-		Object[] temp = this.courses.toArray();
+		String courses = "";
 
-		return temp;
+		Iterator<Course> it = this.courses.iterator();
 
+		while (it.hasNext()) {
+			if (this.courses.size() <= 1) {
+				courses += it.next().toString();
+			} else {
+				courses += it.next().toString() + "--";
+			}
+		}
+
+		return courses;
+
+	}
+
+	public LinkedList<Course> coursesList() {
+		return this.courses;
 	}
 
 	/**
@@ -86,45 +98,46 @@ public class Student extends Person {
 	 */
 	public boolean setCourses(LinkedList<Course> courses) {
 
-		if (courses == null) {
-			return false;
+		if (courses.isEmpty()) {
+			throw new NullPointerException("The list of courses is empty!");
 		} else {
 			this.courses.addAll(courses);
 			return true;
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see applicationPackage.Person#addMessage(applicationPackage.Message)
-	 */
 	@Override
 	public void addMessage(Message message) {
-		// TODO Auto-generated method stub
-
+		this.getMessagesList().add(message);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see applicationPackage.Person#sendMessage(java.lang.String)
-	 */
+	// Delete method later
 	@Override
 	public boolean sendMessage(String userType) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see applicationPackage.Person#viewMessage()
-	 */
 	@Override
-	public void viewMessage() {
-		// TODO Auto-generated method stub
+	public String viewMessage() {
+		String output = "Your Messages:" + "\n" + "\n";
 
+		String[] format = this.getMessages().trim().replace("[", "").replace("]", "").split("--");
+		String[] getMessage = null;
+
+		for (int x = 0; x < format.length; x++) {
+			getMessage = format[x].split("-");
+			output += getMessage[3] + "\n";
+		}
+
+		return output;
+	}
+
+	@Override
+	public String toString() {
+
+		String output = super.toString() + "," + this.getGradeLevel() + "," + this.getCourses();
+
+		return output;
 	}
 
 }

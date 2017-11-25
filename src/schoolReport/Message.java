@@ -5,16 +5,15 @@ public class Message {
 	public static final int ZERO = 0;
 
 	// Variables
-	private int sender;
-	private int recipient;
-	private String subject;
+	private int senderID;
+	private int recipientID;
 	private String message;
 
 	/**
 	 * Default constructor
 	 */
 	public Message() {
-		this(0, 0, null, null);
+		this(0, 0, null);
 	}
 
 	/**
@@ -27,22 +26,21 @@ public class Message {
 	 * @param message
 	 *            -> The Message
 	 */
-	public Message(int sender, int recipient, String subject, String message) {
-		this.sender = sender;
-		this.recipient = recipient;
-		this.subject = subject;
+	public Message(int sender, int recipient, String message) {
+		this.senderID = sender;
+		this.recipientID = recipient;
 		this.message = message;
 	}
 
 	public int getSender() {
-		return this.sender;
+		return this.senderID;
 	}
 
 	public boolean setSender(int sender) {
 		if (sender <= ZERO) {
-			return false;
+			throw new IllegalArgumentException("The Sender ID cannot be less than zero. Invalid argument value");
 		} else {
-			this.sender = sender;
+			this.senderID = sender;
 			return true;
 		}
 	}
@@ -53,7 +51,7 @@ public class Message {
 	 * @return the recipient
 	 */
 	public int getRecipient() {
-		return this.recipient;
+		return this.recipientID;
 	}
 
 	/**
@@ -64,33 +62,9 @@ public class Message {
 	 */
 	public boolean setRecipient(int recipient) {
 		if (recipient <= ZERO) {
-			return false;
+			throw new IllegalArgumentException("The Reciepient ID cannot be less than zero. Invalid argument value");
 		} else {
-			this.recipient = recipient;
-			return true;
-		}
-	}
-
-	/**
-	 * Retrieve the subject of the message
-	 *
-	 * @return the subject
-	 */
-	public String getSubject() {
-		return this.subject;
-	}
-
-	/**
-	 * Set the subject of the message
-	 *
-	 * @param subject
-	 *            the subject to set
-	 */
-	public boolean setSubject(String subject) {
-		if (subject.equals("") || (subject == null)) {
-			return false;
-		} else {
-			this.subject = subject;
+			this.recipientID = recipient;
 			return true;
 		}
 	}
@@ -112,7 +86,7 @@ public class Message {
 	 */
 	public boolean setMessage(String message) {
 		if (message.equals("") || (message == null)) {
-			return false;
+			throw new NullPointerException("Message cannot be empty");
 		} else {
 			this.message = message;
 			return true;
@@ -120,13 +94,13 @@ public class Message {
 	}
 
 	/*
-	 * Create and return string representation of the class
+	 * (non-Javadoc)
 	 *
-	 * @return -> String representation of the class
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "Message [recipient=" + recipient + ", subject=" + subject + ", message=" + message + "]";
+		return "[" + this.getSender() + "-" + this.getRecipient() + "-" + this.getMessage() + "]";
 	}
 
 }
