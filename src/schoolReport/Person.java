@@ -1,14 +1,15 @@
 package schoolReport;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public abstract class Person {
 
 	public static final int PHONE_NUM_LENGTH = 10;
-	public static final int MAX_MESSAGES = 100;
 
 	// Person Attributes/ variables.
 	public static int userID;
+	private String password;
 	private String firstName;
 	private String lastName;
 	private String emailAddress;
@@ -20,7 +21,7 @@ public abstract class Person {
 	 * values.
 	 */
 	public Person() {
-		this("", "", "", "", null);
+		this("", "", "", "", "", null);
 	}
 
 	/**
@@ -38,8 +39,9 @@ public abstract class Person {
 	 * @param messages
 	 *            -> Messages
 	 */
-	public Person(String firstName, String lastName, String emailAddress, String phoneNumber,
+	public Person(String password, String firstName, String lastName, String emailAddress, String phoneNumber,
 			LinkedList<Message> messages) {
+		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.emailAddress = emailAddress;
@@ -54,6 +56,9 @@ public abstract class Person {
 
 		}
 
+	}
+
+	public static void incrementUserID() {
 		userID++;
 	}
 
@@ -64,6 +69,23 @@ public abstract class Person {
 	 */
 	public static int getUserID() {
 		return userID;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	/**
+	 * @param password
+	 * @return
+	 */
+	public boolean setPassword(String password) {
+		if (password.equalsIgnoreCase("")) {
+			throw new NullPointerException("Password is empty!");
+		} else {
+			this.password = password;
+			return true;
+		}
 	}
 
 	/**
@@ -110,7 +132,7 @@ public abstract class Person {
 	 */
 	public boolean setFirstName(String firstName) {
 		if ((firstName == null) || firstName.equalsIgnoreCase("")) {
-			return false;
+			throw new NullPointerException("First name can't be empty!");
 		} else {
 			this.firstName = firstName;
 			return true;
@@ -125,7 +147,7 @@ public abstract class Person {
 	 */
 	public boolean setLastName(String lastName) {
 		if ((lastName == null) || lastName.equalsIgnoreCase("")) {
-			return false;
+			throw new NullPointerException("Last name can't be empty!");
 		} else {
 			this.lastName = lastName;
 			return true;
@@ -141,7 +163,7 @@ public abstract class Person {
 	public boolean setEmailAddress(String emailAddress) {
 
 		if ((emailAddress == null) || emailAddress.equalsIgnoreCase("")) {
-			return false;
+			throw new NullPointerException("Email address can't be empty!");
 		} else {
 
 			boolean atFlag = false;
@@ -166,7 +188,7 @@ public abstract class Person {
 				this.emailAddress = emailAddress;
 				return true;
 			} else {
-				return false;
+				throw new IllegalArgumentException("Email address isn't valid!");
 			}
 
 		} // else closing bracket
@@ -182,13 +204,13 @@ public abstract class Person {
 	public boolean setPhoneNumber(String phoneNumber) {
 
 		if ((phoneNumber == null) || phoneNumber.equalsIgnoreCase("")) {
-			return false;
+			throw new NullPointerException("Phone number can't be empty!");
 		} else if (phoneNumber.trim().replace("-", "").length() != PHONE_NUM_LENGTH) {
-			return false;
+			throw new IllegalArgumentException("Phone number format or length not valid!");
 		} else if (phoneNumber.charAt(3) != ('-')) {
-			return false;
+			throw new IllegalArgumentException("Phone number format not valid!");
 		} else if (phoneNumber.charAt(7) != ('-')) {
-			return false;
+			throw new IllegalArgumentException("Phone number format not valid!");
 		} else {
 
 			String tempNumber = phoneNumber.trim().replace("-", "");
@@ -206,7 +228,7 @@ public abstract class Person {
 			} // while loop closing bracket
 
 			if (invalid == true) {
-				return false;
+				throw new IllegalArgumentException("Phone number contains a non-digit character");
 			} else {
 				this.phoneNumber = phoneNumber;
 				return true;
@@ -221,24 +243,39 @@ public abstract class Person {
 	 *
 	 * @return the messages
 	 */
-	public Object[] getMessages() {
+	public String getMessages() {
 
-		Object[] temp = this.messages.toArray();
+		Iterator<Message> it = this.messages.iterator();
 
-		return temp;
+		String messages = "";
+
+		while (it.hasNext()) {
+			if (this.messages.size() <= 1) {
+				messages += it.next().toString();
+			} else {
+				messages += it.next().toString() + "--";
+			}
+
+		}
+
+		return messages;
+	}
+
+	public LinkedList<Message> getMessagesList() {
+		return this.messages;
 	}
 
 	/**
 	 * @param messages
 	 *            the messages to set
 	 */
-	public boolean setMessage(Message messages) {
+	public boolean setMessage(LinkedList<Message> messages) {
 
 		if ((messages == null)) {
-			return false;
+			throw new NullPointerException("Messages is empty");
 		} else {
 
-			this.messages.add(messages);
+			this.messages.addAll(messages);
 
 			return true;
 
@@ -268,7 +305,7 @@ public abstract class Person {
 	 *
 	 * @return array of messages to display
 	 */
-	public abstract void viewMessage();
+	public abstract String viewMessage();
 
 	/*
 	 * Create and return string representation of the class
@@ -277,8 +314,19 @@ public abstract class Person {
 	 */
 	@Override
 	public String toString() {
-		return "Person [userID=" + userID + ", firstName=" + firstName + ", lastName=" + lastName + ", emailAddress="
-				+ emailAddress + ", phoneNumber=" + phoneNumber + ", messages=" + getMessages() + "]";
+
+		String output = "";
+
+		output += getUserID() + ",";
+		output += this.getPassword() + ",";
+		output += this.getFirstName() + ",";
+		output += this.getLastName() + ",";
+		output += this.getEmailAddress() + ",";
+		output += this.getPhoneNumber() + ",";
+		output += this.getMessages();
+
+		return output;
+
 	}
 
 }
