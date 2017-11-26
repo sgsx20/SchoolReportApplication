@@ -32,9 +32,14 @@ public class Application {
 
 		Person.incrementUserID();
 		Student t = new Student("pass", "Jacob", "Smith", "jsmith@gmail.com", "571-222-1234", x, 10, k);
-		System.out.println(t.toString());
 
 		FileManager.addNewUserToFile(t);
+
+		Person.incrementUserID();
+
+		Student q = new Student("xx", "Jacob", "Smith", "jsmith@gmail.com", "571-222-1234", x, 10, k);
+
+		FileManager.addNewUserToFile(q);
 
 		Message three = new Message(004, 010, "adminMessage");
 		Message four = new Message(006, 100, "adminMessage2");
@@ -47,6 +52,11 @@ public class Application {
 		Administrator A = new Administrator("lol", "Bill", "joe", "b@gmail.com", "321-123-3451", messages);
 
 		FileManager.addNewUserToFile(A);
+
+		Person.incrementUserID();
+		Administrator B = new Administrator("test", "asfjk", "xc", "mail.com", "222-111-222", messages);
+
+		FileManager.addNewUserToFile(B);
 
 		// Delete code above later
 		JDialog.setDefaultLookAndFeelDecorated(true);

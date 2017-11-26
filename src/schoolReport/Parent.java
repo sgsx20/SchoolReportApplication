@@ -24,9 +24,12 @@ public class Parent extends Person {
 	 *            -> Phone number
 	 * @param messages
 	 *            -> Messages
-	 * @parem aStudent -> Student
-	 * @parem aTeacher -> Teacher
-	 * @paremt anAdmin -> Administrator
+	 * @param aStudent
+	 *            -> Student
+	 * @param aTeacher
+	 *            -> Teacher
+	 * @param anAdmin
+	 *            -> Administrator
 	 */
 	public Parent(String password, String firstName, String lastName, String emailAddress, String phoneNumber,
 			LinkedList<Message> messages, Student aStudent, Teacher aTeacher, Administrator anAdmin) {
@@ -138,12 +141,6 @@ public class Parent extends Person {
 	public void addMessage(Message message) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public boolean sendMessage(String userType) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override

@@ -292,15 +292,6 @@ public abstract class Person {
 	public abstract void addMessage(Message message);
 
 	/**
-	 * abstract method to send message.
-	 *
-	 * @param userType
-	 *            - User to send message to
-	 * @return - true or false
-	 */
-	public abstract boolean sendMessage(String userType);
-
-	/**
 	 * abstract method to view message
 	 *
 	 * @return array of messages to display

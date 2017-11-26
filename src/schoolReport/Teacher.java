@@ -84,12 +84,6 @@ public class Teacher extends Person {
 	}
 
 	@Override
-	public boolean sendMessage(String userType) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public String viewMessage() {
 		// TODO Auto-generated method stub
 		return null;

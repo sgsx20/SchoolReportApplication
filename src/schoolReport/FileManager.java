@@ -67,37 +67,36 @@ public class FileManager {
 		String filePath = getFilePath(userType);
 
 		BufferedReader br = null;
+		BufferedWriter bw = null;
 
 		try {
 			br = new BufferedReader(new FileReader(new File(filePath)));
 
 			String hasLine = null;
+			boolean flag = false;
 
-			while ((hasLine = br.readLine()) != null) {
+			while (((hasLine = br.readLine()) != null) && !flag) {
 
 				String line = hasLine;
 				String[] split = line.split(",");
 
 				int id = Integer.parseInt(split[0]);
-				String pwd = split[1];
 
 				if (receipientID == id) {
+					flag = true;
 					getUser = getUserObject(userType, split);
 					getUser.addMessage(new Message(senderID, receipientID, message));
-					BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filePath)));
-					System.out.println(getUser.toString());
-					bw.write(getUser.toString());
 				}
 			}
-
 			br.close();
-
+			bw = new BufferedWriter(new FileWriter(new File(filePath), true));
+			bw.write(getUser.toString());
+			bw.close();
 		} catch (FileNotFoundException ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
-
 	}
 
 	public static void addNewUserToFile(Object userToAdd) {
@@ -117,10 +116,9 @@ public class FileManager {
 		BufferedWriter bw = null;
 
 		try {
-			bw = new BufferedWriter(new FileWriter(new File(filePath)));
-
+			bw = new BufferedWriter(new FileWriter(new File(filePath), true));
 			bw.write(userToAdd.toString());
-
+			bw.newLine();
 			bw.close();
 		} catch (FileNotFoundException ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());

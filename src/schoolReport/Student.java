@@ -111,12 +111,6 @@ public class Student extends Person {
 		this.getMessagesList().add(message);
 	}
 
-	// Delete method later
-	@Override
-	public boolean sendMessage(String userType) {
-		return false;
-	}
-
 	@Override
 	public String viewMessage() {
 		String output = "Your Messages:" + "\n" + "\n";
@@ -126,7 +120,7 @@ public class Student extends Person {
 
 		for (int x = 0; x < format.length; x++) {
 			getMessage = format[x].split("-");
-			output += getMessage[3] + "\n";
+			output += getMessage[2] + "\n";
 		}
 
 		return output;
