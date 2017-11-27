@@ -29,8 +29,9 @@ public class FileManager {
 			br = new BufferedReader(new FileReader(new File(filePath)));
 
 			String hasLine = null;
+			boolean flag = false;
 
-			while ((hasLine = br.readLine()) != null) {
+			while (((hasLine = br.readLine()) != null) && !flag) {
 
 				String line = hasLine;
 				String[] split = line.split(",");
@@ -42,6 +43,7 @@ public class FileManager {
 
 					if (password.equalsIgnoreCase(pwd)) {
 						getUser = getUserObject(userType, split);
+						flag = true;
 					}
 
 				}
@@ -70,12 +72,16 @@ public class FileManager {
 		BufferedWriter bw = null;
 
 		try {
-			br = new BufferedReader(new FileReader(new File(filePath)));
+
+			File path = new File(filePath);
+			FileReader reader = new FileReader(path);
+			br = new BufferedReader(reader);
+
+			File tempFile = new File("./src/schoolReport/tempFile.txt");
+			FileWriter fw = new FileWriter(tempFile, true);
+			bw = new BufferedWriter(fw);
 
 			String hasLine = null;
-			boolean flag = false;
-
-			bw = new BufferedWriter(new FileWriter(new File("./src/schoolReport/tempFile.txt"), true));
 
 			while (((hasLine = br.readLine()) != null)) {
 
@@ -86,7 +92,6 @@ public class FileManager {
 				int id = Integer.parseInt(split[0]);
 
 				if (receipientID == id) {
-					flag = true;
 					getUser = getUserObject(userType, split);
 					getUser.addMessage(new Message(senderID, receipientID, message));
 					bw.write(getUser.toString());
@@ -97,17 +102,17 @@ public class FileManager {
 				}
 			}
 
-			// if (flag == true) {
-			// bw.write(getUser.toString());
-			// }
-
 			br.close();
 			bw.close();
+			path.delete();
+			tempFile.renameTo(path);
+
 		} catch (FileNotFoundException ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
+
 	}
 
 	public static void addNewUserToFile(Object userToAdd) {
@@ -180,13 +185,15 @@ public class FileManager {
 	private static Person getUserObject(String userType, String[] recordLine) {
 
 		Person userCreated = null;
+		String[] messages = null;
+		LinkedList<Message> addMessages = null;
 
 		switch (userType) {
 		case "Teacher":
 			break;
 		case "Student":
-			String[] messages = recordLine[6].trim().replace("[", "").replace("]", "").split("--");
-			LinkedList<Message> addMessages = new LinkedList<>();
+			messages = recordLine[6].trim().replace("[", "").replace("]", "").split("--");
+			addMessages = new LinkedList<>();
 			for (int x = 0; x < messages.length; x++) {
 				String[] each = messages[x].split("-");
 				Message temp = new Message(Integer.parseInt(each[0]), Integer.parseInt(each[1]), each[2]);
@@ -206,6 +213,22 @@ public class FileManager {
 					recordLine[4], recordLine[5], addMessages, Integer.parseInt(recordLine[7]), setCourses);
 			break;
 		case "Parent":
+			messages = recordLine[6].trim().replace("[", "").replace("]", "").split("--");
+			addMessages = new LinkedList<>();
+			for (int x = 0; x < messages.length; x++) {
+				String[] each = messages[x].split("-");
+				Message temp = new Message(Integer.parseInt(each[0]), Integer.parseInt(each[1]), each[2]);
+				addMessages.add(temp);
+			}
+
+			String[] children = recordLine[7].trim().replace("{", "").replace("}", "").split("--");
+			LinkedList<Integer> studentList = new LinkedList<>();
+			for (int x = 0; x < children.length; x++) {
+				studentList.add(Integer.parseInt(children[x]));
+			}
+
+			userCreated = new Parent(Integer.parseInt(recordLine[0]), recordLine[1], recordLine[2], recordLine[3],
+					recordLine[4], recordLine[5], addMessages, studentList);
 			break;
 		case "Administrator":
 			String[] getAdminMessages = recordLine[6].trim().replace("[", "").replace("]", "").split("--");
@@ -244,6 +267,145 @@ public class FileManager {
 		}
 
 		return filePath;
+	}
+
+	// ======================================== EB
+	// =====================================
+
+	/**
+	 * This method will return a user based on the parameters.
+	 *
+	 * @param -
+	 *            userType is of type String, holds the type of object requested.
+	 * @param -
+	 *            userID is of type int, id of the user requested.
+	 */
+	public static Person getUser(String userType, int userId) {
+		Person getUser = null;
+		String filePath = getFilePath(userType);
+		BufferedReader br = null;
+
+		try {
+			br = new BufferedReader(new FileReader(new File(filePath)));
+			String hasLine = null;
+			while ((hasLine = br.readLine()) != null) {
+				String line = hasLine;
+
+				// array to hold record details
+				String[] split = line.split(",");
+
+				int id = Integer.parseInt(split[0]);
+
+				if (userId == id) {
+					getUser = getUserObject(userType, split);
+				}
+			}
+			br.close();
+
+		} catch (FileNotFoundException ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+		return getUser;
+	}
+
+	/**
+	 * This method will use the user type and user object to modify user info and
+	 * update the user record to reflect the changes.
+	 *
+	 * @param -
+	 *            lookupType is of type String, holds the type of object to modify.
+	 * @param -
+	 *            userToUpdate is of type Person, it is the object being modified..
+	 */
+	public static void updateUser(String lookupType, Person userToUpdate) {
+		Person getUser = null;
+		String filePath = getFilePath(lookupType);
+		BufferedReader br = null;
+		BufferedWriter bw = null;
+
+		// open usertype file to retrieve record
+		// all records are written into temp file which will replace the previous
+		// record file
+		try {
+			File path = new File(filePath);
+			FileReader reader = new FileReader(path);
+			br = new BufferedReader(reader);
+
+			File tempFile = new File("./src/schoolReport/tempFile.txt");
+			FileWriter fw = new FileWriter(tempFile, true);
+			bw = new BufferedWriter(fw);
+
+			String hasLine = null;
+
+			while (((hasLine = br.readLine()) != null)) {
+				String line = hasLine;
+				String[] split = line.split(",");
+
+				int id = Integer.parseInt(split[0]);
+
+				if (userToUpdate.getUserID() == id) {
+					getUser = userToUpdate;
+					bw.write(getUser.toString());
+					bw.newLine();
+				} else {
+					bw.write(line);
+					bw.newLine();
+				}
+			}
+
+			br.close();
+			bw.close();
+			path.delete();
+			tempFile.renameTo(path);
+		} catch (FileNotFoundException ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+	}// end updateUser method
+
+	/**
+	 * This method will get the most recent ID used by the Administrator class to
+	 * create the last user account. It will open the appropriate file to retrieve
+	 * the userID and increment to use it for a new account. Then, the new
+	 * incremented ID will be stored in the file to be used next time.
+	 *
+	 * @param
+	 */
+	public static int getNextUserID() {
+		int newID = -1;
+		String filePath = "./src/schoolReport/LastUserID.txt";
+		BufferedReader br = null;
+		BufferedWriter bw = null;
+
+		try {
+			File path = new File(filePath);
+			FileReader reader = new FileReader(path);
+			br = new BufferedReader(reader);
+
+			String hasLine = null;
+
+			while (((hasLine = br.readLine()) != null)) {
+				String line = hasLine;
+
+				newID = Integer.parseInt(line) + 1;
+			}
+			br.close();
+
+			FileWriter writer = new FileWriter(path, true);
+			bw = new BufferedWriter(writer);
+
+			bw.append(Integer.toString(newID));
+			bw.close();
+		} catch (FileNotFoundException ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+
+		return newID;
 	}
 
 }

@@ -18,6 +18,13 @@ public class Application {
 	 */
 	public static void main(String[] args) {
 
+		String message = "3,pass,Tom,Smith,t.smith@gmu.edu,703-303-2020,[1-2-message]--[3-4-message2]--,{1,pass,Jacob,Smith,jsmith@gmail.com,571-222-1234,[1-2-message]--[3-4-message2]--,10,[IT100-5-BS Course-3-1-50.0-100.0]--[IT003-10-Test-10-10-80.0-50.0]--}--{2,xx,Jacob,Smith,jsmith@gmail.com,571-222-1234,[1-2-message]--[3-4-message2]--,10,[IT100-5-BS Course-3-1-50.0-100.0]--[IT003-10-Test-10-10-80.0-50.0]--}--";
+
+		String[] line = message.split(",");
+
+		System.out.println(line[6].toString());
+		// String[] children = line[7].toString();
+
 		Message one = new Message(001, 002, "message");
 		Message two = new Message(003, 004, "message2");
 
@@ -58,13 +65,25 @@ public class Application {
 
 		FileManager.addNewUserToFile(B);
 
+		LinkedList<Integer> stews = new LinkedList<>();
+		stews.add(1);
+		stews.add(2);
+		Parent aParent = new Parent(3, "pass", "Tom", "Smith", "t.smith@gmu.edu", "703-303-2020", x, stews);
+		FileManager.addNewUserToFile(aParent);
+
 		JDialog.setDefaultLookAndFeelDecorated(true);
-		String userType = promptForUserType();
-		if ((userType == null) || userType.equalsIgnoreCase("Quit")) {
-			displayThankYouMessage();
-		} else {
-			getLoginCredentials(userType);
-		}
+
+		String userType = "";
+		boolean exit = false;
+		do {
+			userType = promptForUserType();
+			if ((userType == null) || userType.equalsIgnoreCase("Quit")) {
+				displayThankYouMessage();
+				exit = true;
+			} else {
+				getLoginCredentials(userType);
+			}
+		} while (!exit);
 	}
 
 	public static String promptForUserType() {
@@ -83,7 +102,6 @@ public class Application {
 
 		boolean valid = false;
 		int attempt = 0;
-		boolean back = false;
 
 		do {
 
@@ -119,7 +137,7 @@ public class Application {
 
 			if (verified != null) {
 				valid = true;
-				back = showMenu(userID, password, verified);
+				showMenu(userID, password, verified);
 			} else {
 				attempt++;
 				JOptionPane.showMessageDialog(null, "Invalid credentials entered. Try again!");
@@ -133,40 +151,26 @@ public class Application {
 			displayThankYouMessage();
 		}
 
-		if (back) {
-			promptForUserType();
-		}
-
 	}
 
-	public static boolean showMenu(int userID, String password, Person user) {
-
-		boolean back = false;
+	public static void showMenu(int userID, String password, Person user) {
 
 		switch (user.getClass().getSimpleName()) {
 		case "Teacher":
 			showTeacherMenu(userID);
-			back = true;
 			break;
 		case "Student":
 			showStudentMenu(userID, user);
-			back = true;
 			break;
 		case "Parent":
-			back = true;
+			showParentMenu(userID, user);
 			break;
 		case "Administrator":
-			back = true;
+			showAdminMenu(userID, user);
 			break;
 		default:
 			JOptionPane.showMessageDialog(null, "Code should never get till here");
 		}
-
-		if (back) {
-			loggedOut();
-		}
-
-		return back;
 
 	}
 
@@ -226,12 +230,15 @@ public class Application {
 		JOptionPane.showMessageDialog(null, FileManager.getTeacherHours(student));
 	}
 
-	public static void viewMessages(Student user) {
-
-		try {
+	public static void viewMessages(Person user) {
+		if (user instanceof Teacher) {
 			JOptionPane.showMessageDialog(null, user.viewMessage());
-		} catch (NullPointerException ex) {
-			JOptionPane.showMessageDialog(null, ex.getMessage());
+		} else if (user instanceof Student) {
+			JOptionPane.showMessageDialog(null, user.viewMessage());
+		} else if (user instanceof Parent) {
+			JOptionPane.showMessageDialog(null, user.viewMessage());
+		} else if (user instanceof Administrator) {
+			JOptionPane.showMessageDialog(null, user.viewMessage());
 		}
 	}
 
@@ -272,6 +279,425 @@ public class Application {
 
 	}
 
+	// ============================== Ado ============================
+	/* Parent Methods ******/
+	/**
+	 * The Parent's menu
+	 *
+	 * @param userId,
+	 *            user (Person object)
+	 */
+	public static void showParentMenu(int userId, Person user) {
+
+		Parent aParent = (Parent) user;
+		boolean keepGoing = true;
+
+		do {
+
+			String[] choices = { "View Grade Report", "View Contact Information", "View Messages", "Send Message",
+					"Exit" };
+
+			Object result = JOptionPane.showInputDialog(null, "Select a functionality", "",
+					JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
+
+			String selection = (String) result;
+
+			if (result == null) {
+				selection = "Exit";
+			}
+
+			switch (selection) {
+			case "View Grade Report":
+				viewGradeReport(aParent);
+				// viewGradeReport(userID, student);
+				break;
+			case "View Contact Information":
+				System.out.println(selection);
+				// viewTeacherHours(student);
+				break;
+			case "View Messages":
+				viewMessages(aParent);
+				// viewMessages(student);
+				break;
+			case "Send Message":
+				System.out.println(selection);
+				// sendMessage(userID);
+				break;
+			case "Exit":
+				keepGoing = false;
+				break;
+			default:
+				JOptionPane.showMessageDialog(null, "Something went wrong");
+			}
+
+		} while (keepGoing);
+	}
+
+	/**
+	 * Allows the Parent to view grade report
+	 *
+	 * @param user
+	 *            (Person object)
+	 */
+	public static void viewGradeReport(Person user) {
+		try {
+			JOptionPane.showMessageDialog(null, ((Parent) user).viewStudentReport());
+		} catch (NullPointerException ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		}
+
+	}
+
+	/**
+	 * Allows the Parent to view messages
+	 *
+	 * @param userId,
+	 *            user (Person object)
+	 */
+	public static void viewMessages(Parent user) {
+
+		try {
+			JOptionPane.showMessageDialog(null, user.viewMessage());
+		} catch (NullPointerException ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		}
+	}
+
+	// ===========================================================================
+	// Ehsan ===============================================================
+
+	/**
+	 * This method displays all Administrator user functionalities, including
+	 * viewing and updating user accounts, create and adding new users into the
+	 * records or send and view messages.
+	 *
+	 * @param -
+	 *            sendID: type int, ID of the user logged in and is used as an
+	 *            argument for the sendMessage method as a 'sender'.
+	 * @param -
+	 *            user: type Teacher, reference for Teacher object to populate
+	 *            specific properties.
+	 */
+	private static void showAdminMenu(int senderID, Person user) {
+		Administrator admin = (Administrator) user;
+		boolean keepGoing = true;
+		String lookupType = "";
+
+		// loop until the user decides to exit - prompt user for menu option and conduct
+		// actions to finish request
+		do {
+			String[] choices = { "View Account", "Update Account", "Add New", "Send Message", "View Messages", "Exit" };
+
+			Object result = JOptionPane.showInputDialog(null, "Select a functionality", "",
+					JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
+
+			String selection = (String) result;
+
+			if (result == null) {
+				selection = "Exit";
+			}
+
+			// switch case for user selection of tasks they wish to execute
+			// lookupType stores the type of user account the logged user wishes to interact
+			// with
+			switch (selection) {
+			case "View Account":
+				lookupType = promptForUserType();
+				viewUser(lookupType);
+				break;
+			case "Update Account":
+				lookupType = promptForUserType();
+				updateAccount(lookupType);
+				break;
+			case "Add New":
+				lookupType = promptForUserType();
+				createUser(lookupType);
+				break;
+			case "Send Message":
+				sendMessage(senderID);
+				break;
+			case "View Messages":
+				viewMessages(user);
+			case "Exit":
+				keepGoing = false;
+				break;
+			default:
+				JOptionPane.showMessageDialog(null, "Something went wrong");
+			}
+		} while (keepGoing);
+
+	}
+
+	/**
+	 * This method adds the additional specific properties of the Teacher class.
+	 * Prompts admin for teachers office hours, if the property is set properly, DDC
+	 * returns true. Else, an exception may be caught and handled and admin
+	 * reprompted to fix the error.
+	 *
+	 * @param -
+	 *            newUser: type Teacher, reference for Teacher object to populate
+	 *            specific properties.
+	 *
+	 */
+	public static void populateUserDetails(Teacher newUser) {
+		boolean valid = false;
+		do {
+			try {
+				valid = newUser.setOfficeHours(JOptionPane.showInputDialog("Assign teacher's office hours: "));
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		} while (!valid);
+		valid = false;
+
+		// courses
+	}
+
+	/**
+	 * This method adds the additional specific properties of the Student class.
+	 *
+	 * @param -
+	 *            newUser: type Student, used to update list of course(s) for the
+	 *            student.
+	 */
+	public static void populateUserDetails(Student newUser) {
+		boolean valid = false;
+		do {
+			try {
+				valid = newUser
+						.setGradeLevel(Integer.parseInt(JOptionPane.showInputDialog("Enter student grade level: ")));
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(null, ex.getMessage());
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		} while (!valid);
+
+		// courses LL
+	}
+
+	/**
+	 * This method adds the detail properties of the Parent class.
+	 *
+	 * @param -
+	 *            newUser: type Parent, used to update list of child(ren) for the
+	 *            parent.
+	 */
+	public static void populateUserDetails(Parent newUser) {
+		// children LL
+	}
+
+	/**
+	 * This method adds general user info and adds new user into records.
+	 *
+	 * @param -
+	 *            newUser is of type Person, user object that is to be populated.
+	 */
+	public static void populateUser(Person newUser) {
+		int userID;
+		String password;
+		boolean valid = false;
+
+		// get a new userID for new user
+		userID = FileManager.getNextUserID();
+		try {
+			newUser.setUserID(userID);
+		} catch (IllegalArgumentException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+
+		// get password for new user
+		do {
+			password = JOptionPane.showInputDialog("Enter the new user's password");
+			try {
+				valid = newUser.setPassword(password);
+			} catch (NullPointerException e) {
+				JOptionPane.showMessageDialog(null, "Please enter a password, must not be empty!");
+			}
+			if (!valid) {
+				JOptionPane.showMessageDialog(null, "Please enter a valid password");
+			}
+		} while (!valid);
+		valid = false;
+
+		// input user info - will loop until all values are properly set
+		do {
+			try {
+				newUser.setFirstName(JOptionPane.showInputDialog("Enter user's first name."));
+				newUser.setLastName(JOptionPane.showInputDialog("Enter user's last name."));
+				newUser.setEmailAddress(
+						JOptionPane.showInputDialog("Enter user's email address in format: 'user@provider.domain'."));
+				newUser.setPhoneNumber(
+						JOptionPane.showInputDialog("Enter user's phone number in format: '(xxx)-xxx-xxxx'."));
+				valid = true;
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		} while (!valid);
+		valid = false;
+
+		if (newUser instanceof Parent) {
+			populateUserDetails((Parent) newUser);
+
+		} else if ((newUser instanceof Student)) {
+			populateUserDetails((Student) newUser);
+
+		} else if ((newUser instanceof Teacher)) {
+			populateUserDetails((Teacher) newUser);
+
+		}
+
+		// will use utility class method to append new user to appropriate file
+		FileManager.addNewUserToFile(newUser);
+	}
+
+	/**
+	 * This method will add a new user into records.
+	 *
+	 * @param -
+	 *            lookupType: String holding the type of user to look up
+	 */
+	public static void createUser(String createType) {
+		Person newUser = null;
+
+		if (createType.equalsIgnoreCase("Teacher")) {
+			newUser = new Teacher();
+		} else if (createType.equalsIgnoreCase("Parent")) {
+			newUser = new Parent();
+		} else if (createType.equalsIgnoreCase("Student")) {
+			newUser = new Student();
+		} else if (createType.equalsIgnoreCase("Administrator")) {
+			newUser = new Administrator();
+		}
+
+		populateUser(newUser);
+
+	}// end createUser method
+
+	/**
+	 * This method will update user account field selected.
+	 *
+	 * @param -
+	 *            lookupType: String holding the type of user to look up
+	 */
+	public static void changeField(String modField, Person modifyUser) {
+		if (modField.equalsIgnoreCase("Password")) {
+			try {
+				modifyUser.setPassword(JOptionPane.showInputDialog("Enter a new password: "));
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		} else if (modField.equalsIgnoreCase("First Name")) {
+			try {
+				modifyUser.setFirstName(JOptionPane.showInputDialog("Enter new First Name: "));
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		} else if (modField.equalsIgnoreCase(JOptionPane.showInputDialog("Last Name"))) {
+			try {
+				modifyUser.setLastName(JOptionPane.showInputDialog("Enter new Last Name: "));
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		} else if (modField.equalsIgnoreCase("Phone")) {
+			try {
+				modifyUser.setPhoneNumber(JOptionPane.showInputDialog("Enter a new phone number: "));
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		} else if (modField.equalsIgnoreCase("Email")) {
+			try {
+				modifyUser.setEmailAddress(JOptionPane.showInputDialog("Enter a new email: "));
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * This method will update user account info.
+	 *
+	 * @param -
+	 *            lookupType: String holding the type of user to look up
+	 */
+	public static void updateAccount(String lookupType) {
+		int lookupID;
+		lookupID = getUserID();
+		boolean found = false;
+		Person modifyUser = null;
+
+		try {
+			modifyUser = FileManager.getUser(lookupType, lookupID);
+			if (modifyUser != null) {
+				found = true;
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+
+		if (found) {
+			String[] choices = { "Password", "First Name", "Last Name", "Phone", "Email", "Exit" };
+
+			Object result = JOptionPane.showInputDialog(null, "Which property would you like to change?", "",
+					JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
+
+			String selection = (String) result;
+
+			if (result == null) {
+				selection = "Exit";
+			}
+
+			if (selection != null) {
+				changeField(selection, modifyUser);
+				JOptionPane.showMessageDialog(null, modifyUser.toString());
+			}
+
+			FileManager.updateUser(lookupType, modifyUser);
+
+		}
+	} // end updateAccount method
+
+	/**
+	 * This method will display user account info.
+	 *
+	 * @param -
+	 *            lookupType: String holding the type of user to look up
+	 */
+	public static void viewUser(String lookupType) {
+		int lookupID;
+		lookupID = getUserID();
+
+		Person findUser = FileManager.getUser(lookupType, lookupID);
+
+		JOptionPane.showMessageDialog(null, findUser.toString());
+	}
+
+	/**
+	 * This method is used to prompt the logged user for the ID of the user they
+	 * wish to interact with.
+	 *
+	 * @param
+	 */
+	public static int getUserID() {
+		int userID = -1;
+		boolean valid = false;
+		do {
+			try {
+				userID = Integer.parseInt(JOptionPane.showInputDialog("Enter userID to use!"));
+				valid = true;
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, "Please enter a userID (xxxxx)");
+			}
+		} while (!valid);
+
+		return userID;
+	}
+
+	// ======================= Teacher =================
 	public static void showTeacherMenu(int userID) {
 
 		boolean keepGoing = true;

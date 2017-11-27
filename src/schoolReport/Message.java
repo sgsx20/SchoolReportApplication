@@ -2,9 +2,10 @@ package schoolReport;
 
 public class Message {
 
+	// Constants
 	public static final int ZERO = 0;
 
-	// Variables
+	// Instance variables
 	private int senderID;
 	private int recipientID;
 	private String message;
@@ -32,41 +33,22 @@ public class Message {
 		this.message = message;
 	}
 
-	public int getSender() {
+	/**
+	 * Get the sender ID
+	 *
+	 * @return sender ID
+	 */
+	public int getSenderID() {
 		return this.senderID;
-	}
-
-	public boolean setSender(int sender) {
-		if (sender <= ZERO) {
-			throw new IllegalArgumentException("The Sender ID cannot be less than zero. Invalid argument value");
-		} else {
-			this.senderID = sender;
-			return true;
-		}
 	}
 
 	/**
 	 * Retrieve recipient ID
 	 *
-	 * @return the recipient
+	 * @return the recipient ID
 	 */
-	public int getRecipient() {
+	public int getRecipientID() {
 		return this.recipientID;
-	}
-
-	/**
-	 * Set the recipient ID
-	 *
-	 * @param recipient
-	 *            the recipient to set
-	 */
-	public boolean setRecipient(int recipient) {
-		if (recipient <= ZERO) {
-			throw new IllegalArgumentException("The Reciepient ID cannot be less than zero. Invalid argument value");
-		} else {
-			this.recipientID = recipient;
-			return true;
-		}
 	}
 
 	/**
@@ -79,10 +61,45 @@ public class Message {
 	}
 
 	/**
+	 * Set the sender ID
+	 *
+	 * @param sender
+	 *            - Sender ID
+	 * @return true or false
+	 */
+	public boolean setSender(int sender) {
+		if (sender <= ZERO) {
+			throw new IllegalArgumentException("The Sender ID cannot be less than zero. Invalid argument value");
+		} else {
+			this.senderID = sender;
+			return true;
+		}
+	}
+
+	/**
+	 * Set the recipient ID
+	 *
+	 * @param recipient
+	 *            the recipient to set
+	 *
+	 * @return true or false
+	 */
+	public boolean setRecipient(int recipient) {
+		if (recipient <= ZERO) {
+			throw new IllegalArgumentException("The Reciepient ID cannot be less than zero. Invalid argument value");
+		} else {
+			this.recipientID = recipient;
+			return true;
+		}
+	}
+
+	/**
 	 * Set the message
 	 *
 	 * @param message
 	 *            the message to set
+	 *
+	 * @return true or false
 	 */
 	public boolean setMessage(String message) {
 		if (message.equals("") || (message == null)) {
@@ -94,13 +111,13 @@ public class Message {
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * Create and send string representation
 	 *
-	 * @see java.lang.Object#toString()
+	 * @return string representation
 	 */
 	@Override
 	public String toString() {
-		return "[" + this.getSender() + "-" + this.getRecipient() + "-" + this.getMessage() + "]";
+		return "[" + this.getSenderID() + "-" + this.getRecipientID() + "-" + this.getMessage() + "]";
 	}
 
 }

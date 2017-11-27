@@ -1,1 +1,1 @@
-100,pwd,Joe,Smith,jSmith@gmu.edu,571-423-2222,messages,Monday(3:00PM - 5:00PM)
+10,pwd,Joe,Smith,jSmith@gmu.edu,571-423-2222,messages,Monday(3:00PM - 5:00PM)

@@ -2,17 +2,24 @@ package schoolReport;
 
 public class GradeBook {
 
+	// Constant
 	public static final int ZERO = 0;
 
+	// Instance variables
 	private int studentID;
 	private double midtermGrade;
 	private double finalGrade;
 
+	/**
+	 * Default constructor
+	 */
 	public GradeBook() {
 		this(0, 0.0, 0.0);
 	}
 
 	/**
+	 * Specific constructor
+	 *
 	 * @param studentID
 	 * @param midtermGrade
 	 * @param finalGrade
@@ -24,6 +31,8 @@ public class GradeBook {
 	}
 
 	/**
+	 * Get the Student ID
+	 *
 	 * @return the studentID
 	 */
 	public int getStudentID() {
@@ -31,8 +40,30 @@ public class GradeBook {
 	}
 
 	/**
+	 * Get the midterm grade
+	 *
+	 * @return the midtermGrade
+	 */
+	public double getMidtermGrade() {
+		return this.midtermGrade;
+	}
+
+	/**
+	 * Get the final grade
+	 *
+	 * @return the finalGrade
+	 */
+	public double getFinalGrade() {
+		return this.finalGrade;
+	}
+
+	/**
+	 * Set the Student ID
+	 *
 	 * @param studentID
 	 *            the studentID to set
+	 *
+	 * @return true or false
 	 */
 	public boolean setStudentID(int studentID) {
 		if (studentID <= ZERO) {
@@ -44,15 +75,12 @@ public class GradeBook {
 	}
 
 	/**
-	 * @return the midtermGrade
-	 */
-	public double getMidtermGrade() {
-		return this.midtermGrade;
-	}
-
-	/**
+	 * Set midterm grade
+	 *
 	 * @param midtermGrade
 	 *            the midtermGrade to set
+	 *
+	 * @return true or false
 	 */
 	public boolean setMidtermGrade(double midtermGrade) {
 		if ((midtermGrade >= Student.STUDENT_GRADE_MIN) && (midtermGrade <= Student.STUDENT_GRADE_MAX)) {
@@ -64,15 +92,11 @@ public class GradeBook {
 	}
 
 	/**
-	 * @return the finalGrade
-	 */
-	public double getFinalGrade() {
-		return this.finalGrade;
-	}
-
-	/**
+	 * Set the final grade
+	 *
 	 * @param finalGrade
-	 *            the finalGrade to set
+	 *
+	 * @return true or false
 	 */
 	public boolean setFinalGrade(double finalGrade) {
 		if ((finalGrade >= Student.STUDENT_GRADE_MIN) && (finalGrade <= Student.STUDENT_GRADE_MAX)) {
@@ -84,9 +108,9 @@ public class GradeBook {
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * Create and return a string representation
 	 *
-	 * @see java.lang.Object#toString()
+	 * @return string representation
 	 */
 	@Override
 	public String toString() {

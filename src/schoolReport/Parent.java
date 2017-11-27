@@ -1,15 +1,23 @@
 package schoolReport;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class Parent extends Person {
 
 	private LinkedList<Student> studentList;
-	private LinkedList<Teacher> teacherList;
-	private LinkedList<Administrator> adminList;
+	private LinkedList<Integer> studentIds;
 
 	// Constructor*****
+
+	/**
+	 * Default constructor
+	 */
+	public Parent() {
+		this(0, "", "", "", "", "", null, null);
+	}
+
 	/**
 	 * Specific Constructor with all fields. It will also generate the user ID by
 	 * the system.
@@ -24,25 +32,21 @@ public class Parent extends Person {
 	 *            -> Phone number
 	 * @param messages
 	 *            -> Messages
-	 * @param aStudent
-	 *            -> Student
-	 * @param aTeacher
-	 *            -> Teacher
-	 * @param anAdmin
-	 *            -> Administrator
+	 * @parem aStudent -> Student
+	 * @parem aTeacher -> Teacher
+	 * @paremt anAdmin -> Administrator
 	 */
-	public Parent(int userID, String password, String firstName, String lastName, String emailAddress,
-			String phoneNumber, LinkedList<Message> messages, Student aStudent, Teacher aTeacher,
-			Administrator anAdmin) {
-		super(userID, password, firstName, lastName, emailAddress, phoneNumber, messages);
+	public Parent(int userId, String password, String firstName, String lastName, String emailAddress,
+			String phoneNumber, LinkedList<Message> messages, LinkedList<Integer> studentIds) {
+		super(userId, password, firstName, lastName, emailAddress, phoneNumber, messages);
 
-		if ((aStudent != null) && (aTeacher != null) && (anAdmin != null)) {
-			this.studentList.add(aStudent);
-			this.teacherList.add(aTeacher);
-			this.adminList.add(anAdmin);
+		if (!studentIds.isEmpty()) {
+			this.studentIds = new LinkedList<>();
+			this.studentIds.addAll(studentIds);
 		} else {
-			throw new IllegalArgumentException("Parent could not be added.");
+			throw new IllegalArgumentException("Parent was not created.");
 		}
+
 	}
 
 	// Accessor Methods*****
@@ -57,26 +61,33 @@ public class Parent extends Person {
 	}
 
 	/**
-	 * Retrieve the teacher list
+	 * Retrieve the Student Id's
 	 *
-	 * @return the tList
+	 * @return the sList
 	 */
-	public LinkedList<Teacher> getTeacherList() {
-		LinkedList<Teacher> tList = new LinkedList<>(this.teacherList);
-		return tList;
-	}
-
-	/**
-	 * Retrieve the adminList
-	 *
-	 * @return the aList
-	 */
-	public LinkedList<Administrator> getAdminList() {
-		LinkedList<Administrator> aList = new LinkedList<>(this.adminList);
-		return aList;
+	public LinkedList<Integer> getStudentIds() {
+		LinkedList<Integer> sList = new LinkedList<>(this.studentIds);
+		return sList;
 	}
 
 	// Set Methods*****
+	/**
+	 * Adds the student to the list
+	 * 
+	 * @param aStudent
+	 *            (Student object to set)
+	 * @return true or false for validation
+	 */
+	public boolean setStudentList(LinkedList<Student> aStudent) {
+		if (aStudent != null) {
+			this.studentList = new LinkedList<>();
+			this.studentList.addAll(aStudent);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * Adds the student to the list
 	 *
@@ -84,41 +95,10 @@ public class Parent extends Person {
 	 *            (Student object to set)
 	 * @return true or false for validation
 	 */
-	public boolean setStudentList(Student aStudent) {
+	public boolean setStudentIds(LinkedList<Integer> aStudent) {
 		if (aStudent != null) {
-			this.studentList.add(aStudent);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Adds the Teacher to the list
-	 *
-	 * @param aTeacher
-	 *            (Teacher object to set)
-	 * @return true or false for validation
-	 */
-	public boolean setTeacherList(Teacher aTeacher) {
-		if (aTeacher != null) {
-			this.teacherList.add(aTeacher);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Adds the Admin to the list
-	 *
-	 * @param anAdmin
-	 *            (Administrator object to set)
-	 * @return true or false for validation
-	 */
-	public boolean setAdminList(Administrator anAdmin) {
-		if (anAdmin != null) {
-			this.adminList.add(anAdmin);
+			this.studentIds = new LinkedList<>();
+			this.studentIds.addAll(aStudent);
 			return true;
 		} else {
 			return false;
@@ -126,28 +106,39 @@ public class Parent extends Person {
 	}
 
 	// Special Methods*****
-	public String viewGradeReport() {
-		return "";
-	}
+	/**
+	 * View Student Reports based on the children the parent has
+	 * 
+	 * @return a formatted String of the student's grade report
+	 */
+	public String viewStudentReport() {
+		String courses = "Grades for Students: \n\n";
 
-	public String viewTeacherInformation() {
-		return "";
-	}
-
-	public String viewAdministratorInformation() {
-		return "";
+		Iterator<Student> it = this.studentList.iterator();
+		while (it.hasNext()) {
+			courses += it.next().viewMyGradeReport() + "\n";
+		}
+		return courses;
 	}
 
 	@Override
 	public void addMessage(Message message) {
-		// TODO Auto-generated method stub
-
+		super.getMessagesList().add(message);
 	}
 
 	@Override
 	public String viewMessage() {
-		// TODO Auto-generated method stub
-		return "";
+		String output = "Your Messages:" + "\n" + "\n";
+
+		String[] format = this.getMessages().trim().replace("[", "").replace("]", "").split("--");
+		String[] getMessage = null;
+
+		for (int x = 0; x < format.length; x++) {
+			getMessage = format[x].split("-");
+			output += getMessage[2] + "\n";
+		}
+
+		return output;
 	}
 
 	/**
@@ -156,58 +147,38 @@ public class Parent extends Person {
 	 * @return String studentList
 	 */
 	public String convertStudentList() {
-		String studentList = "================\nParent's Children: ";
+		String studentList = "";
 		ListIterator<Student> listIterator = this.studentList.listIterator();
 		while (listIterator.hasNext()) {
-			studentList += listIterator.next();
+			studentList += "{" + listIterator.next() + "}" + "--";
 		}
 
-		studentList += "================";
 		return studentList;
-
 	}
 
 	/**
-	 * Converts list to a formatted String version of the teacher list
+	 * Converts list to a formatted String version of the student list
 	 *
-	 * @return String teacherList
+	 * @return String studentList
 	 */
-	public String convertTeacherList() {
-		String teacherList = "================\nTeacher List: ";
-		ListIterator<Teacher> listIterator = this.teacherList.listIterator();
+	public String convertStudentIds() {
+		String studentList = "";
+		ListIterator<Integer> listIterator = this.studentIds.listIterator();
 		while (listIterator.hasNext()) {
-			teacherList += listIterator.next();
+			studentList += "{" + listIterator.next() + "}" + "--";
 		}
-		teacherList += "================";
-		return teacherList;
-	}
-
-	/**
-	 * Converts list to a formatted String version of the admin list
-	 *
-	 * @return String adminList
-	 */
-	public String convertAdminList() {
-		String adminList = "================\nAdmin List: ";
-		ListIterator<Administrator> listIterator = this.adminList.listIterator();
-		while (listIterator.hasNext()) {
-			adminList += listIterator.next();
-		}
-		adminList += "================";
-		return adminList;
-
+		return studentList;
 	}
 
 	// ToString Method*****
-	/*
+	/**
 	 * Create and return string representation of the class
 	 *
 	 * @return - String representation
 	 */
 	@Override
 	public String toString() {
-		String output = "Parent*****\n" + super.toString() + "\n" + convertStudentList() + "\n" + convertTeacherList()
-				+ "\n" + convertAdminList();
+		String output = super.toString() + "," + convertStudentIds();
 		return output;
 	}
 

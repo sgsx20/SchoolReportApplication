@@ -5,12 +5,14 @@ import java.util.LinkedList;
 
 public class Student extends Person {
 
+	// Constants
 	public static final int NUM_OF_COURSES = 8;
 	public static final int STUDENT_GRADE_MIN = 0;
 	public static final int STUDENT_GRADE_MAX = 100;
 	public static final int STUDENT_GRADE_LEVEL_MIN = 8;
 	public static final int STUDENT_GRADE_LEVEL_MAX = 12;
 
+	// Instance variables
 	private int gradeLevel;
 	private LinkedList<Course> courses;
 
@@ -41,7 +43,7 @@ public class Student extends Person {
 		} else {
 			this.courses = new LinkedList<>();
 			this.courses.addAll(courses);
-		} // else closing bracket
+		}
 	}
 
 	/**
@@ -51,6 +53,38 @@ public class Student extends Person {
 	 */
 	public int getGradeLevel() {
 		return this.gradeLevel;
+	}
+
+	/**
+	 * Retrieves the courses as a string
+	 *
+	 * @return courses string
+	 */
+	public String getCourses() {
+
+		String courses = "";
+
+		Iterator<Course> it = this.courses.iterator();
+
+		while (it.hasNext()) {
+			if (this.courses.size() <= 1) {
+				courses += it.next().toString();
+			} else {
+				courses += it.next().toString() + "--";
+			}
+		}
+
+		return courses;
+
+	}
+
+	/**
+	 * Retrieve the courses linked list
+	 *
+	 * @return courses Linked List
+	 */
+	public LinkedList<Course> coursesList() {
+		return this.courses;
 	}
 
 	/**
@@ -70,28 +104,13 @@ public class Student extends Person {
 		}
 	}
 
-	public String getCourses() {
-
-		String courses = "";
-
-		Iterator<Course> it = this.courses.iterator();
-
-		while (it.hasNext()) {
-			if (this.courses.size() <= 1) {
-				courses += it.next().toString();
-			} else {
-				courses += it.next().toString() + "--";
-			}
-		}
-
-		return courses;
-
-	}
-
-	public LinkedList<Course> coursesList() {
-		return this.courses;
-	}
-
+	/**
+	 * Set the courses
+	 *
+	 * @param courses
+	 *            linked list
+	 * @return true or false
+	 */
 	public boolean setCourses(LinkedList<Course> courses) {
 
 		if (courses.isEmpty()) {
@@ -102,25 +121,30 @@ public class Student extends Person {
 		}
 	}
 
+	/**
+	 * Method to view the grade report for the student of all the courses he or she
+	 * is enrolled in
+	 *
+	 * @return grade report string
+	 */
 	public String viewMyGradeReport() {
 
 		String output = "";
 
-		if (this.getCourses().equalsIgnoreCase("") || (this.getCourses() == null)) {
+		// If courses is empty, show error. Else, add to string of grade report
+		if ((this.coursesList().size() == 0) || (this.coursesList() == null)) {
 			throw new NullPointerException("No courses to view grade report");
 		} else {
 
-			String[] courses = this.getCourses().trim().replace("[", "").replace("]", "").split("--");
+			output += "Student Grade Report\n\n";
 
-			output += "                                           Your Grade Report\n\n";
+			Iterator<Course> it = this.coursesList().iterator();
 
-			int x = 0;
-
-			while ((x < courses.length)) {
-				String[] course = courses[x].split("-");
-				output += "Course Title: " + " " + course[2] + " | " + "Midterm Grade: " + course[5] + " | "
-						+ "Final Grade: " + course[6] + "\n";
-				x++;
+			while (it.hasNext()) {
+				Course temp = it.next();
+				output += "Course Title:" + " " + temp.getCourseTitle() + " | " + "Midterm Grade: "
+						+ temp.getGradeBook().getMidtermGrade() + " | " + "Final Grade: "
+						+ temp.getGradeBook().getFinalGrade() + "\n";
 			}
 
 		}
@@ -129,32 +153,42 @@ public class Student extends Person {
 
 	}
 
+	/*
+	 * Add message method to add a message to the linked list of messages
+	 */
 	@Override
 	public void addMessage(Message message) {
 		this.getMessagesList().add(message);
 	}
 
+	/*
+	 * View message to view the messages of the student
+	 */
 	@Override
 	public String viewMessage() {
 
-		if (this.getMessages().equalsIgnoreCase("") || (this.getMessages() == null)) {
+		if ((this.getMessagesList().size() == 0) || (this.getMessages() == null)) {
 			throw new NullPointerException("There are no messages to view. Empty inbox");
 		} else {
 
 			String output = "Your Messages:" + "\n" + "\n";
 
-			String[] format = this.getMessages().trim().replace("[", "").replace("]", "").split("--");
-			String[] getMessage = null;
+			Iterator<Message> it = this.getMessagesList().iterator();
 
-			for (int x = 0; x < format.length; x++) {
-				getMessage = format[x].split("-");
-				output += getMessage[2] + "\n";
+			while (it.hasNext()) {
+				Message temp = it.next();
+				output += temp.getMessage() + "\n";
 			}
 
 			return output;
 		}
 	}
 
+	/*
+	 * Student string representation
+	 *
+	 * @return string representation
+	 */
 	@Override
 	public String toString() {
 
