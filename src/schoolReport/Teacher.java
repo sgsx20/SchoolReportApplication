@@ -17,7 +17,7 @@ public class Teacher extends Person {
 	 *
 	 */
 	public Teacher() {
-		this("", "", "", "", "", null, null, "");
+		this(0, "", "", "", "", "", null, null, "");
 	}
 
 	/**
@@ -28,9 +28,9 @@ public class Teacher extends Person {
 	 * @param phoneNumber
 	 * @param messages
 	 */
-	public Teacher(String password, String firstName, String lastName, String emailAddress, String phoneNumber,
-			LinkedList<Message> messages, Course[] coursesTeaching, String officeHours) {
-		super(password, firstName, lastName, emailAddress, phoneNumber, messages);
+	public Teacher(int userID, String password, String firstName, String lastName, String emailAddress,
+			String phoneNumber, LinkedList<Message> messages, Course[] coursesTeaching, String officeHours) {
+		super(userID, password, firstName, lastName, emailAddress, phoneNumber, messages);
 
 		if (coursesTeaching == null) {
 			this.coursesTeaching = new Course[MAX_CLASSES_TO_TEACH];
@@ -65,16 +65,30 @@ public class Teacher extends Person {
 	 * @param coursesTeaching
 	 *            the coursesTeaching to set
 	 */
-	public void setCoursesTeaching(Course[] coursesTeaching) {
-		this.coursesTeaching = coursesTeaching;
+	public boolean setCoursesTeaching(Course[] coursesTeaching) {
+		if (coursesTeaching.length < MAX_CLASSES_TO_TEACH) {
+			throw new IllegalArgumentException(
+					"Number of classes out of valid range. Teacher can only teach 4 courses");
+		} else {
+			for (int x = 0; x < coursesTeaching.length; x++) {
+				this.coursesTeaching[x] = coursesTeaching[x];
+			}
+
+			return true;
+		}
 	}
 
 	/**
 	 * @param officeHours
 	 *            the officeHours to set
 	 */
-	public void setOfficeHours(String officeHours) {
-		this.officeHours = officeHours;
+	public boolean setOfficeHours(String officeHours) {
+		if (officeHours.equalsIgnoreCase("") || (officeHours == null)) {
+			throw new NullPointerException("Office hours can't be empty");
+		} else {
+			this.officeHours = officeHours;
+			return true;
+		}
 	}
 
 	@Override
@@ -85,8 +99,17 @@ public class Teacher extends Person {
 
 	@Override
 	public String viewMessage() {
-		// TODO Auto-generated method stub
-		return null;
+		String output = "Your Messages:" + "\n" + "\n";
+
+		String[] format = this.getMessages().trim().replace("[", "").replace("]", "").split("--");
+		String[] getMessage = null;
+
+		for (int x = 0; x < format.length; x++) {
+			getMessage = format[x].split("-");
+			output += getMessage[2] + "\n";
+		}
+
+		return output;
 	}
 
 }

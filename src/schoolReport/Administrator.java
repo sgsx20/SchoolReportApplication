@@ -13,7 +13,7 @@ public class Administrator extends Person {
 	 */
 	public Administrator() {
 		// TODO Auto-generated constructor stub
-		this("", "", "", "", "", null);
+		this(0, "", "", "", "", "", null);
 	}
 
 	/**
@@ -24,9 +24,9 @@ public class Administrator extends Person {
 	 * @param phoneNumber
 	 * @param messages
 	 */
-	public Administrator(String password, String firstName, String lastName, String emailAddress, String phoneNumber,
-			LinkedList<Message> messages) {
-		super(password, firstName, lastName, emailAddress, phoneNumber, messages);
+	public Administrator(int userID, String password, String firstName, String lastName, String emailAddress,
+			String phoneNumber, LinkedList<Message> messages) {
+		super(userID, password, firstName, lastName, emailAddress, phoneNumber, messages);
 		// TODO Auto-generated constructor stub
 	}
 

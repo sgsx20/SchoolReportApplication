@@ -6,9 +6,10 @@ import java.util.LinkedList;
 public abstract class Person {
 
 	public static final int PHONE_NUM_LENGTH = 10;
+	public static final int ZERO = 0;
 
 	// Person Attributes/ variables.
-	public static int userID;
+	private int userID;
 	private String password;
 	private String firstName;
 	private String lastName;
@@ -21,7 +22,7 @@ public abstract class Person {
 	 * values.
 	 */
 	public Person() {
-		this("", "", "", "", "", null);
+		this(0, "", "", "", "", "", null);
 	}
 
 	/**
@@ -39,8 +40,9 @@ public abstract class Person {
 	 * @param messages
 	 *            -> Messages
 	 */
-	public Person(String password, String firstName, String lastName, String emailAddress, String phoneNumber,
-			LinkedList<Message> messages) {
+	public Person(int userID, String password, String firstName, String lastName, String emailAddress,
+			String phoneNumber, LinkedList<Message> messages) {
+		this.userID = userID;
 		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -58,17 +60,25 @@ public abstract class Person {
 
 	}
 
-	public static void incrementUserID() {
-		userID++;
+	/**
+	 * @return the userID
+	 */
+	public int getUserID() {
+		return userID;
 	}
 
 	/**
-	 * Retrieve the userID
-	 *
-	 * @return the userID
+	 * @param userID
+	 *            the userID to set
 	 */
-	public static int getUserID() {
-		return userID;
+	public boolean setUserID(int userID) {
+
+		if (userID <= ZERO) {
+			throw new IllegalArgumentException("User ID can't be <= zero");
+		} else {
+			this.userID = userID;
+			return true;
+		}
 	}
 
 	public String getPassword() {

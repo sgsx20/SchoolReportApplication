@@ -75,9 +75,12 @@ public class FileManager {
 			String hasLine = null;
 			boolean flag = false;
 
-			while (((hasLine = br.readLine()) != null) && !flag) {
+			bw = new BufferedWriter(new FileWriter(new File("./src/schoolReport/tempFile.txt"), true));
+
+			while (((hasLine = br.readLine()) != null)) {
 
 				String line = hasLine;
+
 				String[] split = line.split(",");
 
 				int id = Integer.parseInt(split[0]);
@@ -86,11 +89,19 @@ public class FileManager {
 					flag = true;
 					getUser = getUserObject(userType, split);
 					getUser.addMessage(new Message(senderID, receipientID, message));
+					bw.write(getUser.toString());
+					bw.newLine();
+				} else {
+					bw.write(line);
+					bw.newLine();
 				}
 			}
+
+			// if (flag == true) {
+			// bw.write(getUser.toString());
+			// }
+
 			br.close();
-			bw = new BufferedWriter(new FileWriter(new File(filePath), true));
-			bw.write(getUser.toString());
 			bw.close();
 		} catch (FileNotFoundException ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -128,6 +139,44 @@ public class FileManager {
 
 	}
 
+	public static String getTeacherHours(Student object) {
+
+		BufferedReader br = null;
+		String output = "Teacher Office Hours\n\n";
+
+		try {
+			br = new BufferedReader(new FileReader(new File("./src/schoolReport/teacherRecords.txt")));
+
+			String hasLine = null;
+
+			while ((hasLine = br.readLine()) != null) {
+
+				String line = hasLine;
+				String[] split = line.split(",");
+
+				int id = Integer.parseInt(split[0]);
+
+				for (int x = 0; x < object.coursesList().size(); x++) {
+					if (object.coursesList().get(x).getInstructorID() == id) {
+						output += "Course Title: " + " " + object.coursesList().get(x).getCourseTitle() + "\n";
+						output += "Office Hours:" + " " + split[7] + "\n" + "\n";
+					}
+				}
+
+			}
+
+			br.close();
+
+		} catch (FileNotFoundException ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+
+		return output;
+
+	}
+
 	private static Person getUserObject(String userType, String[] recordLine) {
 
 		Person userCreated = null;
@@ -153,8 +202,8 @@ public class FileManager {
 				setCourses.add(temp);
 			}
 
-			userCreated = new Student(recordLine[1], recordLine[2], recordLine[3], recordLine[4], recordLine[5],
-					addMessages, Integer.parseInt(recordLine[7]), setCourses);
+			userCreated = new Student(Integer.parseInt(recordLine[0]), recordLine[1], recordLine[2], recordLine[3],
+					recordLine[4], recordLine[5], addMessages, Integer.parseInt(recordLine[7]), setCourses);
 			break;
 		case "Parent":
 			break;
@@ -167,8 +216,8 @@ public class FileManager {
 				adminMessages.add(temp);
 			}
 
-			userCreated = new Administrator(recordLine[1], recordLine[2], recordLine[3], recordLine[4], recordLine[5],
-					adminMessages);
+			userCreated = new Administrator(Integer.parseInt(recordLine[0]), recordLine[1], recordLine[2],
+					recordLine[3], recordLine[4], recordLine[5], adminMessages);
 			break;
 		}
 

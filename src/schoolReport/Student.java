@@ -18,7 +18,7 @@ public class Student extends Person {
 	 * Default constructor
 	 */
 	public Student() {
-		this("", "", "", "", "", null, 0, null);
+		this(0, "", "", "", "", "", null, 0, null);
 	}
 
 	/**
@@ -30,10 +30,10 @@ public class Student extends Person {
 	 * @param phoneNumber
 	 * @param messages
 	 */
-	public Student(String password, String firstName, String lastName, String emailAddress, String phoneNumber,
-			LinkedList<Message> messages, int gradeLevel, LinkedList<Course> courses) {
+	public Student(int userID, String password, String firstName, String lastName, String emailAddress,
+			String phoneNumber, LinkedList<Message> messages, int gradeLevel, LinkedList<Course> courses) {
 
-		super(password, firstName, lastName, emailAddress, phoneNumber, messages);
+		super(userID, password, firstName, lastName, emailAddress, phoneNumber, messages);
 		this.gradeLevel = gradeLevel;
 
 		if (courses == null) {
@@ -92,10 +92,6 @@ public class Student extends Person {
 		return this.courses;
 	}
 
-	/**
-	 * @param courses
-	 *            the courses to set
-	 */
 	public boolean setCourses(LinkedList<Course> courses) {
 
 		if (courses.isEmpty()) {
@@ -106,6 +102,33 @@ public class Student extends Person {
 		}
 	}
 
+	public String viewMyGradeReport() {
+
+		String output = "";
+
+		if (this.getCourses().equalsIgnoreCase("") || (this.getCourses() == null)) {
+			throw new NullPointerException("No courses to view grade report");
+		} else {
+
+			String[] courses = this.getCourses().trim().replace("[", "").replace("]", "").split("--");
+
+			output += "                                           Your Grade Report\n\n";
+
+			int x = 0;
+
+			while ((x < courses.length)) {
+				String[] course = courses[x].split("-");
+				output += "Course Title: " + " " + course[2] + " | " + "Midterm Grade: " + course[5] + " | "
+						+ "Final Grade: " + course[6] + "\n";
+				x++;
+			}
+
+		}
+
+		return output;
+
+	}
+
 	@Override
 	public void addMessage(Message message) {
 		this.getMessagesList().add(message);
@@ -113,17 +136,23 @@ public class Student extends Person {
 
 	@Override
 	public String viewMessage() {
-		String output = "Your Messages:" + "\n" + "\n";
 
-		String[] format = this.getMessages().trim().replace("[", "").replace("]", "").split("--");
-		String[] getMessage = null;
+		if (this.getMessages().equalsIgnoreCase("") || (this.getMessages() == null)) {
+			throw new NullPointerException("There are no messages to view. Empty inbox");
+		} else {
 
-		for (int x = 0; x < format.length; x++) {
-			getMessage = format[x].split("-");
-			output += getMessage[2] + "\n";
+			String output = "Your Messages:" + "\n" + "\n";
+
+			String[] format = this.getMessages().trim().replace("[", "").replace("]", "").split("--");
+			String[] getMessage = null;
+
+			for (int x = 0; x < format.length; x++) {
+				getMessage = format[x].split("-");
+				output += getMessage[2] + "\n";
+			}
+
+			return output;
 		}
-
-		return output;
 	}
 
 	@Override

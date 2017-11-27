@@ -31,9 +31,10 @@ public class Parent extends Person {
 	 * @param anAdmin
 	 *            -> Administrator
 	 */
-	public Parent(String password, String firstName, String lastName, String emailAddress, String phoneNumber,
-			LinkedList<Message> messages, Student aStudent, Teacher aTeacher, Administrator anAdmin) {
-		super(password, firstName, lastName, emailAddress, phoneNumber, messages);
+	public Parent(int userID, String password, String firstName, String lastName, String emailAddress,
+			String phoneNumber, LinkedList<Message> messages, Student aStudent, Teacher aTeacher,
+			Administrator anAdmin) {
+		super(userID, password, firstName, lastName, emailAddress, phoneNumber, messages);
 
 		if ((aStudent != null) && (aTeacher != null) && (anAdmin != null)) {
 			this.studentList.add(aStudent);
