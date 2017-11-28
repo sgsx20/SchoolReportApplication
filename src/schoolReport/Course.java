@@ -2,10 +2,12 @@ package schoolReport;
 
 public class Course {
 
+	// Constants
 	public static final int ZERO = 0;
 	public static final int NUM_OF_STUDENTS_MIN = 1;
 	public static final int NUM_OF_STUDENTS_MAX = 35;
 
+	// Instance variables
 	private String courseID;
 	private int numStudents;
 	private String courseTitle;
@@ -13,13 +15,15 @@ public class Course {
 	private GradeBook grades;
 
 	/**
-	 *
+	 * Default constructor
 	 */
 	public Course() {
 		this("", 0, "", 0, null);
 	}
 
 	/**
+	 * SPecific Constructor
+	 *
 	 * @param courseID
 	 * @param numStudents
 	 * @param courseTitle
@@ -50,42 +54,12 @@ public class Course {
 	}
 
 	/**
-	 * Set the course ID
-	 *
-	 * @param courseID
-	 *            the courseID to set
-	 */
-	public boolean setCourseID(String courseID) {
-		if (courseID.equalsIgnoreCase("")) {
-			throw new NullPointerException("Course ID cannot be mepty");
-		} else {
-			this.courseID = courseID;
-			return true;
-		}
-	}
-
-	/**
 	 * Get number of students
 	 *
 	 * @return the numStudents
 	 */
 	public int getNumStudents() {
 		return numStudents;
-	}
-
-	/**
-	 * Set the number of students
-	 *
-	 * @param numStudents
-	 *            the numStudents to set
-	 */
-	public boolean setNumStudents(int numStudents) {
-		if ((numStudents >= Course.NUM_OF_STUDENTS_MIN) && (numStudents <= Course.NUM_OF_STUDENTS_MAX)) {
-			this.numStudents = numStudents;
-			return true;
-		} else {
-			throw new IllegalArgumentException("Number of students is out of valid range");
-		}
 	}
 
 	/**
@@ -98,42 +72,12 @@ public class Course {
 	}
 
 	/**
-	 * Set the course title
-	 *
-	 * @param courseTitle
-	 *            the courseTitle to set
-	 */
-	public boolean setCourseTitle(String courseTitle) {
-		if (courseTitle.equalsIgnoreCase("")) {
-			throw new NullPointerException("Course Title cannot be mepty");
-		} else {
-			this.courseTitle = courseTitle;
-			return true;
-		}
-	}
-
-	/**
 	 * Get the instructor ID
 	 *
 	 * @return the instructorID
 	 */
 	public int getInstructorID() {
 		return instructorID;
-	}
-
-	/**
-	 * Set the instructor ID
-	 *
-	 * @param instructorID
-	 *            the instructorID to set
-	 */
-	public boolean setInstructorID(int instructorID) {
-		if (instructorID <= ZERO) {
-			throw new IllegalArgumentException("Instructor ID cannot be <= 0");
-		} else {
-			this.instructorID = instructorID;
-			return true;
-		}
 	}
 
 	/**
@@ -152,10 +96,74 @@ public class Course {
 	}
 
 	/**
+	 * Set the course ID
+	 *
+	 * @param courseID
+	 *            - Course ID to set
+	 * @return true
+	 */
+	public boolean setCourseID(String courseID) {
+		if (courseID.equalsIgnoreCase("")) {
+			throw new NullPointerException("Course ID cannot be mepty");
+		} else {
+			this.courseID = courseID;
+			return true;
+		}
+	}
+
+	/**
+	 * Set the number of students
+	 *
+	 * @param numStudents
+	 * @return true
+	 */
+	public boolean setNumStudents(int numStudents) {
+		if ((numStudents >= Course.NUM_OF_STUDENTS_MIN) && (numStudents <= Course.NUM_OF_STUDENTS_MAX)) {
+			this.numStudents = numStudents;
+			return true;
+		} else {
+			throw new IllegalArgumentException("Number of students is out of valid range");
+		}
+	}
+
+	/**
+	 * Set the course title
+	 *
+	 * @param courseTitle
+	 *            the courseTitle to set
+	 * @return true
+	 */
+	public boolean setCourseTitle(String courseTitle) {
+		if (courseTitle.equalsIgnoreCase("")) {
+			throw new NullPointerException("Course Title cannot be mepty");
+		} else {
+			this.courseTitle = courseTitle;
+			return true;
+		}
+	}
+
+	/**
+	 * Set the instructor ID
+	 *
+	 * @param instructorID
+	 *            the instructorID to set
+	 * @return true
+	 */
+	public boolean setInstructorID(int instructorID) {
+		if (instructorID <= ZERO) {
+			throw new IllegalArgumentException("Instructor ID cannot be <= 0");
+		} else {
+			this.instructorID = instructorID;
+			return true;
+		}
+	}
+
+	/**
 	 * Set grades
 	 *
 	 * @param gradeBook
 	 *            the gradeBook to set
+	 * @return true
 	 */
 	public boolean setGradeBook(GradeBook gradeBook) {
 
@@ -168,9 +176,9 @@ public class Course {
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * Create and return string representation of course
 	 *
-	 * @see java.lang.Object#toString()
+	 * @return string representation of course
 	 */
 	@Override
 	public String toString() {

@@ -8,6 +8,14 @@ import javax.swing.JOptionPane;
 /*
  * @author Shreejesh Shrestha
  *
+ *	Group 4 Phase IV
+ *
+ * 		Team Members:
+ *
+ * - Shreejesh Shrestha
+ * - Adonai Orellana
+ * - Ehsan Baig
+ *
  */
 public class Application {
 
@@ -17,13 +25,6 @@ public class Application {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		String message = "3,pass,Tom,Smith,t.smith@gmu.edu,703-303-2020,[1-2-message]--[3-4-message2]--,{1,pass,Jacob,Smith,jsmith@gmail.com,571-222-1234,[1-2-message]--[3-4-message2]--,10,[IT100-5-BS Course-3-1-50.0-100.0]--[IT003-10-Test-10-10-80.0-50.0]--}--{2,xx,Jacob,Smith,jsmith@gmail.com,571-222-1234,[1-2-message]--[3-4-message2]--,10,[IT100-5-BS Course-3-1-50.0-100.0]--[IT003-10-Test-10-10-80.0-50.0]--}--";
-
-		String[] line = message.split(",");
-
-		System.out.println(line[6].toString());
-		// String[] children = line[7].toString();
 
 		Message one = new Message(001, 002, "message");
 		Message two = new Message(003, 004, "message2");
@@ -86,6 +87,11 @@ public class Application {
 		} while (!exit);
 	}
 
+	/**
+	 * Prompt the user for the type of user to select
+	 *
+	 * @return the selected user type string
+	 */
 	public static String promptForUserType() {
 
 		String[] choices = { "Teacher", "Parent", "Student", "Administrator", "Quit" };
@@ -98,6 +104,12 @@ public class Application {
 
 	}
 
+	/**
+	 * Prompt user for their user ID and password to log in
+	 *
+	 * @param userType
+	 *            - The type of user that is trying to log in
+	 */
 	public static void getLoginCredentials(String userType) {
 
 		boolean valid = false;
@@ -133,8 +145,13 @@ public class Application {
 
 			valid = false;
 
+			// Send the credentials for verification in checkCredentials method
 			Person verified = FileManager.checkCredentials(userID, password, userType);
 
+			/*
+			 * If credentials are valid, an user object is returned. Else, null is returned.
+			 * If user exists, proceed. Else, prompt user again for credentials
+			 */
 			if (verified != null) {
 				valid = true;
 				showMenu(userID, password, verified);
@@ -145,6 +162,7 @@ public class Application {
 
 		} while (!valid && (attempt < 3));
 
+		// If the user makes three consecutive login failures, their account is locked
 		if (attempt == 3) {
 			JOptionPane.showMessageDialog(null,
 					"Maximum attempts reached! The Administrator will be notified to unlock your account.");
@@ -153,11 +171,22 @@ public class Application {
 
 	}
 
+	/**
+	 * Show the menu for the type of user that is logged in
+	 *
+	 * @param userID
+	 *            -> user ID
+	 * @param password
+	 *            -> Password
+	 * @param user
+	 *            -> User object
+	 */
 	public static void showMenu(int userID, String password, Person user) {
 
+		// Depending on the type of user, show that respective user menu
 		switch (user.getClass().getSimpleName()) {
 		case "Teacher":
-			showTeacherMenu(userID);
+			showTeacherMenu(userID, user);
 			break;
 		case "Student":
 			showStudentMenu(userID, user);
@@ -174,16 +203,26 @@ public class Application {
 
 	}
 
+	/**
+	 * Method displays the student menu
+	 *
+	 * @param userID
+	 *            -> User ID
+	 * @param user
+	 *            -> The user object
+	 */
 	public static void showStudentMenu(int userID, Person user) {
 
+		// Cast to student
 		Student student = (Student) user;
+
 		boolean keepGoing = true;
 
 		do {
 
 			String[] choices = { "View Grade Report", "View Teacher Hours", "View Messages", "Send Message", "Exit" };
 
-			Object result = JOptionPane.showInputDialog(null, "Select a functionality", "",
+			Object result = JOptionPane.showInputDialog(null, "Select a student functionality", "",
 					JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
 
 			String selection = (String) result;
@@ -192,6 +231,7 @@ public class Application {
 				selection = "Exit";
 			}
 
+			// Depending on what functionality is selected, run that case method
 			switch (selection) {
 			case "View Grade Report":
 				viewGradeReport(student);
@@ -216,6 +256,12 @@ public class Application {
 
 	}
 
+	/**
+	 * View the grade report of the student
+	 *
+	 * @param user
+	 *            -> Student object
+	 */
 	public static void viewGradeReport(Student user) {
 
 		try {
@@ -226,10 +272,22 @@ public class Application {
 
 	}
 
+	/**
+	 * View the teacher office hours for the student
+	 *
+	 * @param student
+	 *            -> Student object
+	 */
 	public static void viewTeacherHours(Student student) {
 		JOptionPane.showMessageDialog(null, FileManager.getTeacherHours(student));
 	}
 
+	/**
+	 * View messages of the users
+	 *
+	 * @param user
+	 *            -> Type of user whose messages you want to view
+	 */
 	public static void viewMessages(Person user) {
 		if (user instanceof Teacher) {
 			JOptionPane.showMessageDialog(null, user.viewMessage());
@@ -242,12 +300,18 @@ public class Application {
 		}
 	}
 
+	/**
+	 * Send message method to send a message to another user
+	 *
+	 * @param senderID
+	 *            -> the sender ID
+	 */
 	public static void sendMessage(int senderID) {
 
 		String[] recipientType = { "Parent", "Student", "Administrator", "Teacher" };
 
-		Object result = JOptionPane.showInputDialog(null, "Select User Type", "", JOptionPane.QUESTION_MESSAGE, null,
-				recipientType, recipientType[0]);
+		Object result = JOptionPane.showInputDialog(null, "Select User to send Message to:", "",
+				JOptionPane.QUESTION_MESSAGE, null, recipientType, recipientType[0]);
 
 		boolean valid = false;
 		int receipientID = 0;
@@ -273,14 +337,13 @@ public class Application {
 			}
 		} while (!valid);
 
+		// If all inputs are valid, send it to sendMessage in FileManager
 		if (valid) {
 			FileManager.sendMessage(senderID, receipientID, message, (String) result);
 		}
 
 	}
 
-	// ============================== Ado ============================
-	/* Parent Methods ******/
 	/**
 	 * The Parent's menu
 	 *
@@ -363,9 +426,6 @@ public class Application {
 		}
 	}
 
-	// ===========================================================================
-	// Ehsan ===============================================================
-
 	/**
 	 * This method displays all Administrator user functionalities, including
 	 * viewing and updating user accounts, create and adding new users into the
@@ -388,7 +448,7 @@ public class Application {
 		do {
 			String[] choices = { "View Account", "Update Account", "Add New", "Send Message", "View Messages", "Exit" };
 
-			Object result = JOptionPane.showInputDialog(null, "Select a functionality", "",
+			Object result = JOptionPane.showInputDialog(null, "Select an Administrator functionality", "",
 					JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
 
 			String selection = (String) result;
@@ -697,8 +757,12 @@ public class Application {
 		return userID;
 	}
 
-	// ======================= Teacher =================
-	public static void showTeacherMenu(int userID) {
+	/**
+	 * Method to display the teacher menu
+	 *
+	 * @param userID
+	 */
+	public static void showTeacherMenu(int userID, Person user) {
 
 		boolean keepGoing = true;
 
@@ -719,10 +783,12 @@ public class Application {
 			case "Enter grades":
 				break;
 			case "View Contact":
-
+				break;
 			case "View Messages":
+				break;
 			case "Send Message":
 				sendMessage(userID);
+				break;
 			case "Exit":
 				keepGoing = false;
 				break;
@@ -733,10 +799,16 @@ public class Application {
 		} while (keepGoing);
 	}
 
+	/**
+	 * Method to display a thank you message
+	 */
 	public static void displayThankYouMessage() {
 		JOptionPane.showMessageDialog(null, "Thank you for using the application. Goodbye!");
 	}
 
+	/**
+	 * Method to display a logged out message
+	 */
 	public static void loggedOut() {
 		JOptionPane.showMessageDialog(null, "You have successfully logged out");
 	}

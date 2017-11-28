@@ -17,10 +17,24 @@ import javax.swing.JOptionPane;
  */
 public class FileManager {
 
+	/**
+	 * Method to check the credentials of the user that is trying to log in. If
+	 * credentials match, an object of that user is returned. If creds don't match,
+	 * an object is returned still but it's going to contain the value of null.
+	 *
+	 * @param userId
+	 *            -> User ID
+	 * @param password
+	 *            -> Password
+	 * @param userType
+	 *            -> User Type
+	 * @return User Object
+	 */
 	public static Person checkCredentials(int userId, String password, String userType) {
 
 		Person getUser = null;
 
+		// Get the file path for the user type
 		String filePath = getFilePath(userType);
 
 		BufferedReader br = null;
@@ -42,13 +56,15 @@ public class FileManager {
 				if (userId == id) {
 
 					if (password.equalsIgnoreCase(pwd)) {
+
+						// If user ID and password match, create user object
 						getUser = getUserObject(userType, split);
 						flag = true;
 					}
 
-				}
+				} // user ID
 
-			}
+			} // while loop
 
 			br.close();
 
@@ -62,10 +78,23 @@ public class FileManager {
 
 	}
 
+	/**
+	 * Method to send a message to another user.
+	 *
+	 * @param senderID
+	 *            -> ID of sender
+	 * @param receipientID
+	 *            -> Recipient ID
+	 * @param message
+	 *            -> Message to be added
+	 * @param userType
+	 *            -> user type
+	 */
 	public static void sendMessage(int senderID, int receipientID, String message, String userType) {
 
 		Person getUser = null;
 
+		// Get the path of the file
 		String filePath = getFilePath(userType);
 
 		BufferedReader br = null;
@@ -83,6 +112,7 @@ public class FileManager {
 
 			String hasLine = null;
 
+			// Loop through each record in the file
 			while (((hasLine = br.readLine()) != null)) {
 
 				String line = hasLine;
@@ -92,6 +122,8 @@ public class FileManager {
 				int id = Integer.parseInt(split[0]);
 
 				if (receipientID == id) {
+
+					// If recipient ID matches, create object and add message to it
 					getUser = getUserObject(userType, split);
 					getUser.addMessage(new Message(senderID, receipientID, message));
 					bw.write(getUser.toString());
@@ -115,6 +147,12 @@ public class FileManager {
 
 	}
 
+	/**
+	 * Method to add a new user to the file
+	 *
+	 * @param userToAdd
+	 *            -> User object to add
+	 */
 	public static void addNewUserToFile(Object userToAdd) {
 
 		String filePath = "";
@@ -129,6 +167,7 @@ public class FileManager {
 			filePath = "./src/schoolReport/teacherRecords.txt";
 		}
 
+		// Find filepath above then open and add user to that file
 		BufferedWriter bw = null;
 
 		try {
@@ -144,6 +183,13 @@ public class FileManager {
 
 	}
 
+	/**
+	 * Method to get the teacher hours for the student
+	 *
+	 * @param object
+	 *            -> Student object
+	 * @return string output of the teacher hours
+	 */
 	public static String getTeacherHours(Student object) {
 
 		BufferedReader br = null;
@@ -182,12 +228,22 @@ public class FileManager {
 
 	}
 
+	/**
+	 * Method to convert the text file record into an object and return it
+	 *
+	 * @param userType
+	 *            -> User type
+	 * @param recordLine
+	 *            -> Record to tokenize and make an object
+	 * @return -> Type of user Object
+	 */
 	private static Person getUserObject(String userType, String[] recordLine) {
 
 		Person userCreated = null;
 		String[] messages = null;
 		LinkedList<Message> addMessages = null;
 
+		// Depending on user type, create that user and send it back
 		switch (userType) {
 		case "Teacher":
 			break;
@@ -247,6 +303,13 @@ public class FileManager {
 		return userCreated;
 	}
 
+	/**
+	 * Get the file path
+	 *
+	 * @param userType
+	 *            -> User type
+	 * @return the file path
+	 */
 	private static String getFilePath(String userType) {
 
 		String filePath = "";
@@ -268,9 +331,6 @@ public class FileManager {
 
 		return filePath;
 	}
-
-	// ======================================== EB
-	// =====================================
 
 	/**
 	 * This method will return a user based on the parameters.
