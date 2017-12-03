@@ -2,6 +2,7 @@ package schoolReport;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 /**
  * @author Shreejesh Shresta
@@ -13,14 +14,15 @@ public class Teacher extends Person {
 	public static final int MAX_CLASSES_TO_TEACH = 4;
 
 	// Instance variables
-	private Course[] coursesTeaching;
+	private LinkedList<Integer> studentIds;
+	private LinkedList<String> courseIDS;
 	private String officeHours;
 
 	/**
 	 * Default constructor
 	 */
 	public Teacher() {
-		this(0, "", "", "", "", "", null, null, "");
+		this(0, "", "", "", "", "", "", null, null);
 	}
 
 	/**
@@ -34,31 +36,77 @@ public class Teacher extends Person {
 	 * @param messages
 	 */
 	public Teacher(int userID, String password, String firstName, String lastName, String emailAddress,
-			String phoneNumber, LinkedList<Message> messages, Course[] coursesTeaching, String officeHours) {
-		super(userID, password, firstName, lastName, emailAddress, phoneNumber, messages);
+			String phoneNumber, String officeHours, LinkedList<Integer> studentIds, LinkedList<String> courseIDS) {
+		super(userID, password, firstName, lastName, emailAddress, phoneNumber);
 
-		if (coursesTeaching == null) {
-			this.coursesTeaching = new Course[MAX_CLASSES_TO_TEACH];
+		this.officeHours = officeHours;
+		if (courseIDS == null) {
+			this.courseIDS = new LinkedList<>();
 		} else {
-			this.coursesTeaching = new Course[coursesTeaching.length];
+			this.courseIDS = new LinkedList<>();
+			this.courseIDS.addAll(courseIDS);
+		}
+
+		if (!studentIds.isEmpty()) {
+			this.studentIds = new LinkedList<>();
+			this.studentIds.addAll(studentIds);
+		} else {
+			throw new IllegalArgumentException("Parent was not created.");
 		}
 
 	}
 
-	/**
-	 * Get the courses teacher is teaching
-	 *
-	 * @return the coursesTeaching
-	 */
-	public Course[] getCoursesTeaching() {
-		Course[] temp = new Course[this.coursesTeaching.length];
+	public LinkedList<String> listOfCourseID() {
+		return this.courseIDS;
+	}
 
-		for (int x = 0; x < temp.length; x++) {
-			temp[x] = this.coursesTeaching[x];
+	public LinkedList<Integer> getStudentIds() {
+		LinkedList<Integer> sList = new LinkedList<>(this.studentIds);
+		return sList;
+	}
+
+	public LinkedList<String> convertStudentIDtoString() {
+		LinkedList<String> convertedStudentIDs = new LinkedList<>();
+
+		Iterator it = this.getStudentIds().iterator();
+
+		while (it.hasNext()) {
+			String temp = it.next().toString();
+			convertedStudentIDs.add(temp);
 		}
 
-		return temp;
+		return convertedStudentIDs;
+	}
 
+	public String convertStudentIds() {
+		String studentList = "";
+		ListIterator<Integer> listIterator = this.studentIds.listIterator();
+		while (listIterator.hasNext()) {
+			studentList += listIterator.next() + "-";
+		}
+		return studentList;
+	}
+
+	public String convertCourseIds() {
+		String IdList = "";
+
+		Iterator<String> it = this.listOfCourseID().iterator();
+
+		while (it.hasNext()) {
+			if (this.listOfCourseID().size() <= 1) {
+				IdList += it.next().toString();
+			} else {
+				IdList += it.next().toString() + "-";
+			}
+		}
+
+		return IdList;
+	}
+
+	public String writeAttributesToFile() {
+
+		return super.writeAttributesToFile() + this.getOfficeHours() + "," + this.convertStudentIds() + ","
+				+ this.convertCourseIds();
 	}
 
 	/**
@@ -68,26 +116,6 @@ public class Teacher extends Person {
 	 */
 	public String getOfficeHours() {
 		return this.officeHours;
-	}
-
-	/**
-	 * Set the courses teacher is teaching
-	 *
-	 * @param coursesTeaching
-	 *            the coursesTeaching to set
-	 * @return true
-	 */
-	public boolean setCoursesTeaching(Course[] coursesTeaching) {
-		if (coursesTeaching.length < MAX_CLASSES_TO_TEACH) {
-			throw new IllegalArgumentException(
-					"Number of classes out of valid range. Teacher can only teach 4 courses");
-		} else {
-			for (int x = 0; x < coursesTeaching.length; x++) {
-				this.coursesTeaching[x] = coursesTeaching[x];
-			}
-
-			return true;
-		}
 	}
 
 	/**
@@ -106,38 +134,10 @@ public class Teacher extends Person {
 		}
 	}
 
-	/*
-	 * Add message method to add a message to the linked list of messages
-	 */
-	@Override
-	public void addMessage(Message message) {
-		this.getMessagesList().add(message);
-	}
-
-	/*
-	 * View message to view the messages of the student
-	 */
-	@Override
-	public String viewMessage() {
-		if ((this.getMessagesList().size() == 0) || (this.getMessages() == null)) {
-			throw new NullPointerException("There are no messages to view. Empty inbox");
-		} else {
-
-			String output = "Your Messages:" + "\n" + "\n";
-
-			Iterator<Message> it = this.getMessagesList().iterator();
-
-			while (it.hasNext()) {
-				Message temp = it.next();
-				output += temp.getMessage() + "\n";
-			}
-
-			return output;
-		}
-	}
-
 	@Override
 	public String toString() {
-		return super.toString() + "," + this.getOfficeHours() + "," + this.getCoursesTeaching();
+		String output = super.toString() + "\n" + "Office Hours: " + this.officeHours;
+
+		return output;
 	}
 }

@@ -117,7 +117,7 @@ public class Message {
 	 */
 	@Override
 	public String toString() {
-		return "[" + this.getSenderID() + "-" + this.getRecipientID() + "-" + this.getMessage() + "]";
+		return this.getSenderID() + "-" + this.getRecipientID() + "-" + this.getMessage();
 	}
 
 }

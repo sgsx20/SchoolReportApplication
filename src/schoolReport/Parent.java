@@ -1,6 +1,5 @@
 package schoolReport;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -9,13 +8,11 @@ public class Parent extends Person {
 	private LinkedList<Student> studentList;
 	private LinkedList<Integer> studentIds;
 
-	// Constructor*****
-
 	/**
 	 * Default constructor
 	 */
 	public Parent() {
-		this(0, "", "", "", "", "", null, null);
+		this(0, "", "", "", "", "", null);
 	}
 
 	/**
@@ -37,8 +34,8 @@ public class Parent extends Person {
 	 * @paremt anAdmin -> Administrator
 	 */
 	public Parent(int userId, String password, String firstName, String lastName, String emailAddress,
-			String phoneNumber, LinkedList<Message> messages, LinkedList<Integer> studentIds) {
-		super(userId, password, firstName, lastName, emailAddress, phoneNumber, messages);
+			String phoneNumber, LinkedList<Integer> studentIds) {
+		super(userId, password, firstName, lastName, emailAddress, phoneNumber);
 
 		if (!studentIds.isEmpty()) {
 			this.studentIds = new LinkedList<>();
@@ -73,7 +70,7 @@ public class Parent extends Person {
 	// Set Methods*****
 	/**
 	 * Adds the student to the list
-	 * 
+	 *
 	 * @param aStudent
 	 *            (Student object to set)
 	 * @return true or false for validation
@@ -105,42 +102,6 @@ public class Parent extends Person {
 		}
 	}
 
-	// Special Methods*****
-	/**
-	 * View Student Reports based on the children the parent has
-	 * 
-	 * @return a formatted String of the student's grade report
-	 */
-	public String viewStudentReport() {
-		String courses = "Grades for Students: \n\n";
-
-		Iterator<Student> it = this.studentList.iterator();
-		while (it.hasNext()) {
-			courses += it.next().viewMyGradeReport() + "\n";
-		}
-		return courses;
-	}
-
-	@Override
-	public void addMessage(Message message) {
-		super.getMessagesList().add(message);
-	}
-
-	@Override
-	public String viewMessage() {
-		String output = "Your Messages:" + "\n" + "\n";
-
-		String[] format = this.getMessages().trim().replace("[", "").replace("]", "").split("--");
-		String[] getMessage = null;
-
-		for (int x = 0; x < format.length; x++) {
-			getMessage = format[x].split("-");
-			output += getMessage[2] + "\n";
-		}
-
-		return output;
-	}
-
 	/**
 	 * Converts list to a formatted String version of the student list
 	 *
@@ -165,12 +126,15 @@ public class Parent extends Person {
 		String studentList = "";
 		ListIterator<Integer> listIterator = this.studentIds.listIterator();
 		while (listIterator.hasNext()) {
-			studentList += "{" + listIterator.next() + "}" + "--";
+			studentList += listIterator.next() + "-";
 		}
 		return studentList;
 	}
 
-	// ToString Method*****
+	public String writeAttributesToFile() {
+		return super.writeAttributesToFile() + this.convertStudentIds();
+	}
+
 	/**
 	 * Create and return string representation of the class
 	 *
@@ -178,7 +142,12 @@ public class Parent extends Person {
 	 */
 	@Override
 	public String toString() {
-		String output = super.toString() + "," + convertStudentIds();
+		String output = "";
+		if (this.getStudentIds().isEmpty()) {
+			output = super.toString();
+		} else {
+			output = super.toString() + "\nChildren Count: " + this.getStudentIds().size();
+		}
 		return output;
 	}
 

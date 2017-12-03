@@ -1,0 +1,2 @@
+IT100,Intro to IT,5,3,12
+IT200,Web Design,10,3,16

@@ -1,8 +1,5 @@
 package schoolReport;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
 public abstract class Person {
 
 	// Constants
@@ -16,13 +13,12 @@ public abstract class Person {
 	private String lastName;
 	private String emailAddress;
 	private String phoneNumber;
-	private LinkedList<Message> messages;
 
 	/**
 	 * Default constructor.
 	 */
 	public Person() {
-		this(0, "", "", "", "", "", null);
+		this(0, "", "", "", "", "");
 	}
 
 	/**
@@ -40,7 +36,7 @@ public abstract class Person {
 	 *            -> Messages
 	 */
 	public Person(int userID, String password, String firstName, String lastName, String emailAddress,
-			String phoneNumber, LinkedList<Message> messages) {
+			String phoneNumber) {
 
 		// Set the instance variables
 		this.userID = userID;
@@ -50,19 +46,7 @@ public abstract class Person {
 		this.emailAddress = emailAddress;
 		this.phoneNumber = phoneNumber;
 
-		if (messages == null) {
-			this.messages = new LinkedList<>();
-		} else {
-			this.messages = new LinkedList<>();
-			this.messages.addAll(messages);
-		}
-
 	}
-
-	// Abstract methods
-	public abstract void addMessage(Message message);
-
-	public abstract String viewMessage();
 
 	/**
 	 * Get User ID
@@ -119,39 +103,6 @@ public abstract class Person {
 	}
 
 	/**
-	 * Retrieve the messages as a string
-	 *
-	 * @return the messages
-	 */
-	public String getMessages() {
-
-		Iterator<Message> it = this.messages.iterator();
-
-		String messages = "";
-
-		// Split the messages based on a delimiter if more than one
-		while (it.hasNext()) {
-			if (this.messages.size() <= 1) {
-				messages += it.next().toString();
-			} else {
-				messages += it.next().toString() + "--";
-			}
-
-		}
-
-		return messages;
-	}
-
-	/**
-	 * Retrieve the messages as a linked list
-	 *
-	 * @return the messages linked list
-	 */
-	public LinkedList<Message> getMessagesList() {
-		return this.messages;
-	}
-
-	/**
 	 * Set User ID
 	 *
 	 * @param userID
@@ -169,20 +120,43 @@ public abstract class Person {
 		}
 	}
 
-	/**
-	 * Set the password
-	 *
-	 * @param password
-	 *
-	 * @return true or false
-	 */
 	public boolean setPassword(String password) {
-		if (password.equalsIgnoreCase("")) {
-			throw new IllegalArgumentException("Password is empty!");
+		boolean valid = false;
+		if (!password.equals("")) {
+			if (isValidPassword(password)) {
+				this.password = password;
+				return valid;
+			} else {
+				throw new IllegalArgumentException("Password isn't valid");
+			}
 		} else {
-			this.password = password;
-			return true;
+			throw new IllegalArgumentException("Password can't be empty!");
 		}
+
+	}
+
+	public boolean isValidPassword(String password) {
+		boolean valid = false;
+		int MIN_PASSWORD_LENGTH = 6;
+
+		if (password.length() >= MIN_PASSWORD_LENGTH) {
+			boolean hasLower = false;
+			boolean hasUpper = false;
+			for (int x = 0; x < password.length(); x++) {
+				if (Character.isUpperCase(password.charAt(x))) {
+					hasUpper = true;
+				}
+				if (Character.isLowerCase(password.charAt(x))) {
+					hasLower = true;
+				}
+			}
+
+			if (hasLower && hasUpper) {
+				valid = true;
+			}
+		}
+
+		return valid;
 	}
 
 	/**
@@ -227,45 +201,35 @@ public abstract class Person {
 	 *
 	 * @return true or false
 	 */
+
 	public boolean setEmailAddress(String emailAddress) {
-
-		// If email is empty, throw exception.
-		if ((emailAddress == null) || emailAddress.equalsIgnoreCase("")) {
-			throw new IllegalArgumentException("Email address can't be empty!");
-		} else {
-
-			boolean atFlag = false;
-			boolean dotFlag = false;
-			int position = 0;
-
-			// Check to see if the email has a @ sign and a . symbol in it
-			while ((position < emailAddress.length()) && !atFlag && !dotFlag) {
-
-				if (emailAddress.charAt(position) == ('@')) {
-					atFlag = true;
-					position++;
-				} else if (emailAddress.charAt(position) == ('.')) {
-					dotFlag = true;
-					position++;
-				} else {
-					position++;
-				}
-
-			}
-
-			/*
-			 * If email has @ sign and . symbol, set it and return true. else, throw
-			 * exception
-			 */
-			if (atFlag && dotFlag) {
+		boolean valid = false;
+		if (!emailAddress.equals("")) {
+			if (isValidEmail(emailAddress)) {
 				this.emailAddress = emailAddress;
-				return true;
+				return valid;
 			} else {
 				throw new IllegalArgumentException("Email address isn't valid!");
 			}
-
+		} else {
+			throw new IllegalArgumentException("Email address can't be empty");
 		}
 
+	}
+
+	public boolean isValidEmail(String email) {
+		boolean valid = false;
+		int MIN_EMAIL_LENGTH = 6;
+
+		if (email.length() >= MIN_EMAIL_LENGTH) {
+			int atPos = email.indexOf('@');
+			int periodPos = email.indexOf('.');
+			if ((atPos > 0) && ((periodPos < (email.length() - 3)) || (periodPos < (email.length() - 4))
+					|| (periodPos < (email.length() - 5))) && (periodPos > (atPos + 1))) {
+				valid = true;
+			}
+		}
+		return valid;
 	}
 
 	/**
@@ -316,45 +280,44 @@ public abstract class Person {
 
 	}
 
-	/**
-	 * Set the message
-	 *
-	 * @param messages
-	 *            linked list
-	 * @return true or false
-	 */
-	public boolean setMessage(LinkedList<Message> messages) {
+	public String writeAttributesToFile() {
+		String toFile = "";
 
-		// if messages is null, display error. Else, set it.
-		if ((messages == null)) {
-			throw new NullPointerException("Messages is empty");
-		} else {
+		toFile += getUserID() + ",";
+		toFile += this.getPassword() + ",";
+		toFile += this.getFirstName() + ",";
+		toFile += this.getLastName() + ",";
+		toFile += this.getEmailAddress() + ",";
+		toFile += this.getPhoneNumber() + ",";
 
-			this.messages.addAll(messages);
-
-			return true;
-
-		}
-
+		return toFile;
 	}
 
+	// public String writeMessageToFile() {
+	// String message = "";
+	//
+	// message = this.getMessages();
+	//
+	// return message;
+	// }
+
 	/*
-	 * To String representation of the person
+	 * (non-Javadoc)
+	 *
+	 * @see java.lang.Object#toString()
+	 */
+	/*
+	 * To String representation of the Person
 	 *
 	 * @return string output
 	 */
 	@Override
 	public String toString() {
 
-		String output = "";
+		String output = "\n\n";
 
-		output += getUserID() + ",";
-		output += this.getPassword() + ",";
-		output += this.getFirstName() + ",";
-		output += this.getLastName() + ",";
-		output += this.getEmailAddress() + ",";
-		output += this.getPhoneNumber() + ",";
-		output += this.getMessages();
+		output += "User iD: " + this.userID + "\n" + "Name: " + this.firstName + " " + this.lastName + "\n" + "Email: "
+				+ this.emailAddress + "\n" + "Phone: " + this.phoneNumber;
 
 		return output;
 

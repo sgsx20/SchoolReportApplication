@@ -9,16 +9,16 @@ public class Course {
 
 	// Instance variables
 	private String courseID;
-	private int numStudents;
 	private String courseTitle;
+	private int numStudents;
 	private int instructorID;
-	private GradeBook grades;
+	private int gradeBookID;
 
 	/**
 	 * Default constructor
 	 */
 	public Course() {
-		this("", 0, "", 0, null);
+		this("", "", 0, 0, 0);
 	}
 
 	/**
@@ -30,18 +30,12 @@ public class Course {
 	 * @param instructorID
 	 * @param grades
 	 */
-	public Course(String courseID, int numStudents, String courseTitle, int instructorID, GradeBook grades) {
+	public Course(String courseID, String courseTitle, int numStudents, int instructorID, int gradeBookID) {
 		this.courseID = courseID;
-		this.numStudents = numStudents;
 		this.courseTitle = courseTitle;
+		this.numStudents = numStudents;
 		this.instructorID = instructorID;
-
-		if (grades == null) {
-			this.grades = new GradeBook();
-		} else {
-			this.grades = new GradeBook(grades.getStudentID(), grades.getMidtermGrade(), grades.getFinalGrade());
-		}
-
+		this.gradeBookID = gradeBookID;
 	}
 
 	/**
@@ -80,19 +74,8 @@ public class Course {
 		return instructorID;
 	}
 
-	/**
-	 * Get the grades
-	 *
-	 * @return the gradeBook
-	 */
-	public GradeBook getGradeBook() {
-
-		GradeBook temp = new GradeBook();
-
-		temp = this.grades;
-
-		return temp;
-
+	public int getGradeBookID() {
+		return this.gradeBookID;
 	}
 
 	/**
@@ -158,32 +141,19 @@ public class Course {
 		}
 	}
 
-	/**
-	 * Set grades
-	 *
-	 * @param gradeBook
-	 *            the gradeBook to set
-	 * @return true
-	 */
-	public boolean setGradeBook(GradeBook gradeBook) {
-
-		if (gradeBook == null) {
-			throw new NullPointerException("GradeBook is empty");
-		} else {
-			this.grades = gradeBook;
-			return true;
-		}
-	}
-
 	/*
 	 * Create and return string representation of course
 	 *
 	 * @return string representation of course
+	 *
 	 */
 	@Override
 	public String toString() {
-		return "[" + this.getCourseID() + "-" + this.getNumStudents() + "-" + this.getCourseTitle() + "-"
-				+ this.getInstructorID() + "-" + this.getGradeBook() + "]";
+		String output = "";
+		output += "Course ID: " + this.courseID + "\n" + "Title: " + this.courseTitle + "\n" + "Student Count: "
+				+ this.numStudents + "\n" + "Teacher: " + this.instructorID + "\n\n";
+
+		return output;
 	}
 
 }

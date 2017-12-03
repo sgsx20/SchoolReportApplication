@@ -1,6 +1,7 @@
 package schoolReport;
 
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -8,7 +9,7 @@ import javax.swing.JOptionPane;
 /*
  * @author Shreejesh Shrestha
  *
- *	Group 4 Phase IV
+ *	Group 4 Phase V
  *
  * 		Team Members:
  *
@@ -26,58 +27,33 @@ public class Application {
 	 */
 	public static void main(String[] args) {
 
-		Message one = new Message(001, 002, "message");
-		Message two = new Message(003, 004, "message2");
+		LinkedList<String> courseIDs = new LinkedList<>();
+		courseIDs.add("IT100");
+		courseIDs.add("IT200");
 
-		GradeBook g = new GradeBook(1, 50, 100);
-		GradeBook g2 = new GradeBook(10, 80, 50);
+		Student s1 = new Student(1, "pass", "jacob", "smith", "email@gmail.com", "202-222-1234", 10, courseIDs);
+		FileManager.addNewUserToFile(s1);
 
-		Course c = new Course("IT100", 5, "BS Course", 3, g);
-		Course c2 = new Course("IT003", 10, "Test", 10, g2);
+		LinkedList<Integer> studentIDs = new LinkedList<>();
+		studentIDs.add(1);
 
-		LinkedList<Message> x = new LinkedList<>();
-		x.add(one);
-		x.add(two);
+		Parent p1 = new Parent(2, "parent", "Bob", "Johns", "test@gmail.com", "212-222-9987", studentIDs);
+		FileManager.addNewUserToFile(p1);
 
-		LinkedList<Course> k = new LinkedList<>();
-		k.add(c);
-		k.add(c2);
-
-		Student t = new Student(1, "pass", "Jacob", "Smith", "jsmith@gmail.com", "571-222-1234", x, 10, k);
-
-		FileManager.addNewUserToFile(t);
-
-		Student q = new Student(2, "xx", "Jacob", "Smith", "jsmith@gmail.com", "571-222-1234", x, 10, k);
-
-		FileManager.addNewUserToFile(q);
-
-		Message three = new Message(004, 010, "adminMessage");
-		Message four = new Message(006, 100, "adminMessage2");
-
-		LinkedList<Message> messages = new LinkedList<>();
-		messages.add(three);
-		messages.add(four);
-
-		Administrator A = new Administrator(3, "lol", "Bill", "joe", "b@gmail.com", "321-123-3451", messages);
-
-		FileManager.addNewUserToFile(A);
-
-		Administrator B = new Administrator(4, "test", "asfjk", "xc", "mail.com", "222-111-222", messages);
-
-		FileManager.addNewUserToFile(B);
-
-		LinkedList<Integer> stews = new LinkedList<>();
-		stews.add(1);
-		stews.add(2);
-		Parent aParent = new Parent(3, "pass", "Tom", "Smith", "t.smith@gmu.edu", "703-303-2020", x, stews);
-		FileManager.addNewUserToFile(aParent);
+		Teacher t1 = new Teacher(3, "pass", "Lonzo", "Ball", "lzo@gmail.com", "444-222-1111", "Monday(11:00AM - 1:PM)",
+				studentIDs, courseIDs);
+		FileManager.addNewUserToFile(t1);
 
 		JDialog.setDefaultLookAndFeelDecorated(true);
 
 		String userType = "";
 		boolean exit = false;
 		do {
+
+			// Prompt the user for the type of user trying to log in
 			userType = promptForUserType();
+
+			// Continue prompting until user hits cancel or quit
 			if ((userType == null) || userType.equalsIgnoreCase("Quit")) {
 				displayThankYouMessage();
 				exit = true;
@@ -88,12 +64,11 @@ public class Application {
 	}
 
 	/**
-	 * Prompt the user for the type of user to select
+	 * Prompt the user for the type of user to login
 	 *
 	 * @return the selected user type string
 	 */
 	public static String promptForUserType() {
-
 		String[] choices = { "Teacher", "Parent", "Student", "Administrator", "Quit" };
 		Object result = JOptionPane.showInputDialog(null, "Select User Type", "", JOptionPane.QUESTION_MESSAGE, null,
 				choices, choices[0]);
@@ -101,7 +76,6 @@ public class Application {
 		String userType = (String) result;
 
 		return userType;
-
 	}
 
 	/**
@@ -113,54 +87,66 @@ public class Application {
 	public static void getLoginCredentials(String userType) {
 
 		boolean valid = false;
+		boolean exit = false;
+
 		int attempt = 0;
 
 		do {
 
+			String input = "";
 			int userID = 0;
-
-			do {
-				try {
-					userID = Integer.parseInt(JOptionPane.showInputDialog("Enter your User ID"));
-					valid = true;
-				} catch (NumberFormatException e) {
-					JOptionPane.showMessageDialog(null, "Invalid input for User ID. Try again.");
-				}
-
-			} while (!valid);
-
-			valid = false;
-
 			String password = "";
 
-			do {
+			// Prompt for user id
+			input = JOptionPane.showInputDialog("Enter your User ID");
 
-				password = JOptionPane.showInputDialog("Enter your Password");
-
-				if (!password.equalsIgnoreCase("")) {
-					valid = true;
-				}
-
-			} while (!valid);
-
-			valid = false;
-
-			// Send the credentials for verification in checkCredentials method
-			Person verified = FileManager.checkCredentials(userID, password, userType);
-
-			/*
-			 * If credentials are valid, an user object is returned. Else, null is returned.
-			 * If user exists, proceed. Else, prompt user again for credentials
-			 */
-			if (verified != null) {
-				valid = true;
-				showMenu(userID, password, verified);
+			// If user clicks cancel, exit.
+			if (input == null) {
+				exit = true;
+				break;
 			} else {
-				attempt++;
-				JOptionPane.showMessageDialog(null, "Invalid credentials entered. Try again!");
+				try {
+					userID = Integer.parseInt(input);
+				} catch (NumberFormatException e) {
+					JOptionPane.showMessageDialog(null, "Invalid input for User ID. Try again.");
+					input = JOptionPane.showInputDialog("Enter your User ID");
+					if (input == null) {
+						exit = true;
+						break;
+					}
+				}
 			}
 
-		} while (!valid && (attempt < 3));
+			// Prompt for password
+			password = JOptionPane.showInputDialog("Enter your Password");
+
+			if (password == null) {
+				exit = true;
+				break;
+			} else if (!password.equalsIgnoreCase("")) {
+				valid = true;
+			}
+
+			if (valid) {
+
+				// Send the credentials for verification in checkCredentials method
+				Person verified = FileManager.checkCredentials(userID, password, userType);
+
+				/*
+				 * If credentials are valid, an user object is returned. Else, null is returned.
+				 * If user exists, proceed. Else, prompt user again for credentials
+				 */
+				if (verified != null) {
+					valid = true;
+					showMenu(userID, password, verified);
+				} else {
+					attempt++;
+					JOptionPane.showMessageDialog(null, "Invalid credentials entered. Try again!");
+				}
+
+			}
+
+		} while (!valid && (attempt < 3) && !exit);
 
 		// If the user makes three consecutive login failures, their account is locked
 		if (attempt == 3) {
@@ -195,7 +181,7 @@ public class Application {
 			showParentMenu(userID, user);
 			break;
 		case "Administrator":
-			showAdminMenu(userID, user);
+			// showAdminMenu(userID, user);
 			break;
 		default:
 			JOptionPane.showMessageDialog(null, "Code should never get till here");
@@ -231,16 +217,21 @@ public class Application {
 				selection = "Exit";
 			}
 
-			// Depending on what functionality is selected, run that case method
+			// Depending on what functionality is selected, run that method
 			switch (selection) {
 			case "View Grade Report":
-				viewGradeReport(student);
+				try {
+					JOptionPane.showMessageDialog(null, FileManager.viewGradeReport(student));
+				} catch (NullPointerException ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage());
+				}
 				break;
 			case "View Teacher Hours":
-				viewTeacherHours(student);
+				int ID = getUserID();
+				JOptionPane.showMessageDialog(null, FileManager.getTeacherHours(ID));
 				break;
 			case "View Messages":
-				viewMessages(student);
+				JOptionPane.showMessageDialog(null, FileManager.viewMessages(userID));
 				break;
 			case "Send Message":
 				sendMessage(userID);
@@ -257,50 +248,6 @@ public class Application {
 	}
 
 	/**
-	 * View the grade report of the student
-	 *
-	 * @param user
-	 *            -> Student object
-	 */
-	public static void viewGradeReport(Student user) {
-
-		try {
-			JOptionPane.showMessageDialog(null, user.viewMyGradeReport());
-		} catch (NullPointerException ex) {
-			JOptionPane.showMessageDialog(null, ex.getMessage());
-		}
-
-	}
-
-	/**
-	 * View the teacher office hours for the student
-	 *
-	 * @param student
-	 *            -> Student object
-	 */
-	public static void viewTeacherHours(Student student) {
-		JOptionPane.showMessageDialog(null, FileManager.getTeacherHours(student));
-	}
-
-	/**
-	 * View messages of the users
-	 *
-	 * @param user
-	 *            -> Type of user whose messages you want to view
-	 */
-	public static void viewMessages(Person user) {
-		if (user instanceof Teacher) {
-			JOptionPane.showMessageDialog(null, user.viewMessage());
-		} else if (user instanceof Student) {
-			JOptionPane.showMessageDialog(null, user.viewMessage());
-		} else if (user instanceof Parent) {
-			JOptionPane.showMessageDialog(null, user.viewMessage());
-		} else if (user instanceof Administrator) {
-			JOptionPane.showMessageDialog(null, user.viewMessage());
-		}
-	}
-
-	/**
 	 * Send message method to send a message to another user
 	 *
 	 * @param senderID
@@ -308,6 +255,7 @@ public class Application {
 	 */
 	public static void sendMessage(int senderID) {
 
+		// Display and select a user to send message to
 		String[] recipientType = { "Parent", "Student", "Administrator", "Teacher" };
 
 		Object result = JOptionPane.showInputDialog(null, "Select User to send Message to:", "",
@@ -316,6 +264,7 @@ public class Application {
 		boolean valid = false;
 		int receipientID = 0;
 
+		// Prompt for the ID of the recipient ID
 		do {
 			try {
 				receipientID = Integer
@@ -329,6 +278,7 @@ public class Application {
 		valid = false;
 		String message = "";
 
+		// Prompt user to enter the message to send
 		do {
 			message = JOptionPane.showInputDialog("Enter the message you want to send");
 
@@ -337,9 +287,10 @@ public class Application {
 			}
 		} while (!valid);
 
-		// If all inputs are valid, send it to sendMessage in FileManager
+		// If all inputs are valid, send it to sendMessage in FileManager to send
+		// message
 		if (valid) {
-			FileManager.sendMessage(senderID, receipientID, message, (String) result);
+			FileManager.sendMessage(senderID, receipientID, message);
 		}
 
 	}
@@ -350,7 +301,7 @@ public class Application {
 	 * @param userId,
 	 *            user (Person object)
 	 */
-	public static void showParentMenu(int userId, Person user) {
+	public static void showParentMenu(int userID, Person user) {
 
 		Parent aParent = (Parent) user;
 		boolean keepGoing = true;
@@ -372,19 +323,16 @@ public class Application {
 			switch (selection) {
 			case "View Grade Report":
 				viewGradeReport(aParent);
-				// viewGradeReport(userID, student);
 				break;
 			case "View Contact Information":
-				System.out.println(selection);
-				// viewTeacherHours(student);
+				String lookupType = promptForUserType();
+				viewContactInfo(lookupType);
 				break;
 			case "View Messages":
-				viewMessages(aParent);
-				// viewMessages(student);
+				JOptionPane.showMessageDialog(null, FileManager.viewMessages(userID));
 				break;
 			case "Send Message":
-				System.out.println(selection);
-				// sendMessage(userID);
+				sendMessage(userID);
 				break;
 			case "Exit":
 				keepGoing = false;
@@ -403,27 +351,201 @@ public class Application {
 	 *            (Person object)
 	 */
 	public static void viewGradeReport(Person user) {
-		try {
-			JOptionPane.showMessageDialog(null, ((Parent) user).viewStudentReport());
-		} catch (NullPointerException ex) {
-			JOptionPane.showMessageDialog(null, ex.getMessage());
-		}
 
+		String output = "";
+
+		if (((Parent) user).getStudentIds().size() != 0) {
+
+			try {
+
+				LinkedList<Integer> ids = ((Parent) user).getStudentIds();
+				LinkedList<Student> stu = new LinkedList<>();
+				ListIterator<Integer> listIterator = ids.listIterator();
+
+				while (listIterator.hasNext()) {
+					int id = listIterator.next();
+					Student temp = (Student) FileManager.getUser("Student", id);
+					stu.add(temp);
+				}
+
+				((Parent) user).setStudentList(stu);
+
+				for (int x = 0; x < stu.size(); x++) {
+					output += FileManager.viewGradeReport(stu.get(x));
+				}
+			} catch (NullPointerException ex) {
+				JOptionPane.showMessageDialog(null, ex.getMessage());
+			}
+
+			JOptionPane.showMessageDialog(null, output);
+		} else {
+			JOptionPane.showMessageDialog(null, "No Student report to display");
+		}
 	}
 
 	/**
-	 * Allows the Parent to view messages
+	 * This method will display user contact info.
 	 *
-	 * @param userId,
-	 *            user (Person object)
+	 * @param -
+	 *            lookupType: String holding the type of user to look up
 	 */
-	public static void viewMessages(Parent user) {
+	public static void viewContactInfo(String lookupType) {
+		int lookupID;
+		lookupID = getUserID();
 
-		try {
-			JOptionPane.showMessageDialog(null, user.viewMessage());
-		} catch (NullPointerException ex) {
-			JOptionPane.showMessageDialog(null, ex.getMessage());
+		Person findUser = FileManager.getUser(lookupType, lookupID);
+
+		String output = "";
+
+		if (findUser != null) {
+			output = "Contact Information: \n\n" + "Name: " + findUser.getFirstName().substring(0, 1)
+					+ findUser.getFirstName().substring(1) + " " + findUser.getLastName() + "\n" + "Email: "
+					+ findUser.getEmailAddress() + "\n" + "Phone Number: " + findUser.getPhoneNumber();
+		} else {
+			output = "User was not found.";
 		}
+
+		JOptionPane.showMessageDialog(null, output);
+	}
+
+	/**
+	 * This method is used to prompt the logged user for the ID of the user they
+	 * wish to interact with.
+	 *
+	 * @param
+	 */
+	public static int getUserID() {
+		int userID = -1;
+		boolean valid = false;
+		do {
+			try {
+				userID = Integer.parseInt(JOptionPane.showInputDialog("Enter userID to use!"));
+				valid = true;
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, "Please enter a userID (xxxxx)");
+			}
+		} while (!valid);
+
+		return userID;
+	}
+
+	/**
+	 * Method to display the teacher menu
+	 *
+	 * @param userID
+	 */
+	public static void showTeacherMenu(int userID, Person user) {
+
+		Teacher aTeacher = (Teacher) user;
+		boolean keepGoing = true;
+
+		do {
+
+			String[] choices = { "Enter grades", "View Contact", "View Messages", "Send Message", "Exit" };
+
+			Object result = JOptionPane.showInputDialog(null, "Select a functionality", "",
+					JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
+
+			String selection = (String) result;
+
+			if (result == null) {
+				selection = "Exit";
+			}
+
+			switch (selection) {
+			case "Enter grades":
+				enterGrades(aTeacher, userID);
+				break;
+			case "View Contact":
+				String lookupType = promptForUserType();
+				viewContactInfo(lookupType);
+				break;
+			case "View Messages":
+				JOptionPane.showMessageDialog(null, FileManager.viewMessages(userID));
+				break;
+			case "Send Message":
+				sendMessage(userID);
+				break;
+			case "Exit":
+				keepGoing = false;
+				break;
+			default:
+				JOptionPane.showMessageDialog(null, "Something went wrong");
+			}
+
+		} while (keepGoing);
+	}
+
+	public static void enterGrades(Teacher user, int userID) {
+
+		boolean keepGoing = true;
+
+		do {
+
+			String[] courseOptions = user.listOfCourseID().toArray(new String[user.listOfCourseID().size()]);
+
+			Object result = JOptionPane.showInputDialog(null,
+					"Select a Course to Enter Grade for. \n\n Click cancel when you're done entering grades", "",
+					JOptionPane.QUESTION_MESSAGE, null, courseOptions, courseOptions[0]);
+
+			String selection = (String) result;
+
+			if (result == null) {
+				selection = "Exit";
+				break;
+			} else {
+				String[] studentList = user.convertStudentIDtoString()
+						.toArray(new String[user.convertStudentIDtoString().size()]);
+
+				Object studentSelection = JOptionPane.showInputDialog(null,
+						"Select a Student ID whose grades you want to enter \n\n Click cancel when you're done", "",
+						JOptionPane.QUESTION_MESSAGE, null, studentList, studentList[0]);
+
+				String student = (String) studentSelection;
+
+				if (student == null) {
+					student = "Exit";
+					break;
+				} else {
+
+					int midtermGrade = 0;
+					int finalGrade = 0;
+					boolean gradeValid = false;
+
+					do {
+						try {
+							midtermGrade = Integer.parseInt(JOptionPane.showInputDialog("Enter Midterm Grade:"));
+						} catch (NumberFormatException ex) {
+							JOptionPane.showMessageDialog(null, "Midterm Grade can't be empty!");
+						}
+
+						if ((midtermGrade < Student.STUDENT_GRADE_MIN) || (midtermGrade > Student.STUDENT_GRADE_MAX)) {
+							JOptionPane.showMessageDialog(null, "Midterm grade out of valid range");
+						} else {
+							try {
+								finalGrade = Integer.parseInt(JOptionPane.showInputDialog("Enter Final Grade:"));
+							} catch (NumberFormatException ex) {
+								JOptionPane.showMessageDialog(null, "Final Grade can't be empty!");
+							}
+
+							if ((finalGrade < Student.STUDENT_GRADE_MIN) || (finalGrade > Student.STUDENT_GRADE_MAX)) {
+								JOptionPane.showMessageDialog(null, "Final grade out of valid range");
+							} else {
+								gradeValid = true;
+							}
+						}
+					} while (!gradeValid);
+
+					if (gradeValid) {
+
+						FileManager.enterGrades(selection, student, midtermGrade, finalGrade);
+					}
+				}
+
+			}
+
+		} while (!keepGoing);
+
 	}
 
 	/**
@@ -438,8 +560,7 @@ public class Application {
 	 *            user: type Teacher, reference for Teacher object to populate
 	 *            specific properties.
 	 */
-	private static void showAdminMenu(int senderID, Person user) {
-		Administrator admin = (Administrator) user;
+	private static void showAdminMenu(int userID, Person user) {
 		boolean keepGoing = true;
 		String lookupType = "";
 
@@ -474,10 +595,11 @@ public class Application {
 				createUser(lookupType);
 				break;
 			case "Send Message":
-				sendMessage(senderID);
+				sendMessage(userID);
 				break;
 			case "View Messages":
-				viewMessages(user);
+				JOptionPane.showMessageDialog(null, FileManager.viewMessages(userID));
+				break;
 			case "Exit":
 				keepGoing = false;
 				break;
@@ -537,7 +659,74 @@ public class Application {
 			}
 		} while (!valid);
 
-		// courses LL
+		/////////////////////////////////////////////////
+		//////////////// Add to application
+		/////////////////////////////////////////////////
+
+		// Course selection
+		// parse course file and return objects
+		LinkedList<Course> coursesOffered = new LinkedList<>();
+		coursesOffered = FileManager.getCourseList();
+
+		// get list of courses offered
+		String[] options = new String[coursesOffered.size() + 1];
+		for (int x = 0; x < (options.length - 1); x++) {
+			options[x] = coursesOffered.get(x).getCourseID();
+		}
+
+		options[options.length - 1] = "Exit";
+		boolean addMore = true;
+		int courseCount = 0;
+
+		do {
+			Object result = JOptionPane.showInputDialog(null, "Select Course", "", JOptionPane.QUESTION_MESSAGE, null,
+					options, options[0]);
+
+			String courseSelected = (String) result;
+			int index = 0;
+
+			if (courseSelected.equals("Exit")) {
+				addMore = false;
+			} else {
+				if ((courseSelected != null) || (addMore)) {
+					// get index of the selection
+					index = 0;
+					boolean found = false;
+					do {
+						if (coursesOffered.get(index).getCourseID().equals(courseSelected)) {
+							found = true;
+						} else {
+							index++;
+						}
+					} while (!found && (index < coursesOffered.size()));
+
+					if (found) {
+						// LOOP --- select course up to 8 and add student to course
+						int courseSize = coursesOffered.get(index).getNumStudents();
+
+						if (courseSize < Course.NUM_OF_STUDENTS_MAX) {
+							//////////
+							/////////////////////
+							// add student to gradebook
+							int gBook = coursesOffered.get(index).getGradeBookID();
+							GradeBook getBook = FileManager.getGradeBook(gBook);
+							boolean addedStudent = getBook.addStudent(newUser.getUserID());
+
+							if (addedStudent) {
+								// increment courseSize++
+								courseCount++;
+								coursesOffered.get(index).setNumStudents(courseCount);
+							}
+						} else {
+							JOptionPane.showMessageDialog(null, "Sorry, course is full!");
+						}
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Done adding courses!");
+				}
+			}
+
+		} while (addMore && (courseCount < 8));
 	}
 
 	/**
@@ -657,7 +846,7 @@ public class Application {
 			} catch (IllegalArgumentException e) {
 				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
-		} else if (modField.equalsIgnoreCase(JOptionPane.showInputDialog("Last Name"))) {
+		} else if (modField.equalsIgnoreCase("Last Name")) {
 			try {
 				modifyUser.setLastName(JOptionPane.showInputDialog("Enter new Last Name: "));
 			} catch (IllegalArgumentException e) {
@@ -711,12 +900,11 @@ public class Application {
 				selection = "Exit";
 			}
 
-			if (selection != null) {
+			if (!selection.equals("Exit")) {
 				changeField(selection, modifyUser);
 				JOptionPane.showMessageDialog(null, modifyUser.toString());
+				FileManager.updateUser(lookupType, modifyUser);
 			}
-
-			FileManager.updateUser(lookupType, modifyUser);
 
 		}
 	} // end updateAccount method
@@ -734,69 +922,6 @@ public class Application {
 		Person findUser = FileManager.getUser(lookupType, lookupID);
 
 		JOptionPane.showMessageDialog(null, findUser.toString());
-	}
-
-	/**
-	 * This method is used to prompt the logged user for the ID of the user they
-	 * wish to interact with.
-	 *
-	 * @param
-	 */
-	public static int getUserID() {
-		int userID = -1;
-		boolean valid = false;
-		do {
-			try {
-				userID = Integer.parseInt(JOptionPane.showInputDialog("Enter userID to use!"));
-				valid = true;
-			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(null, "Please enter a userID (xxxxx)");
-			}
-		} while (!valid);
-
-		return userID;
-	}
-
-	/**
-	 * Method to display the teacher menu
-	 *
-	 * @param userID
-	 */
-	public static void showTeacherMenu(int userID, Person user) {
-
-		boolean keepGoing = true;
-
-		do {
-
-			String[] choices = { "Enter grades", "View Contact", "View Messages", "Send Message", "Exit" };
-
-			Object result = JOptionPane.showInputDialog(null, "Select a functionality", "",
-					JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
-
-			String selection = (String) result;
-
-			if (result == null) {
-				selection = "Exit";
-			}
-
-			switch (selection) {
-			case "Enter grades":
-				break;
-			case "View Contact":
-				break;
-			case "View Messages":
-				break;
-			case "Send Message":
-				sendMessage(userID);
-				break;
-			case "Exit":
-				keepGoing = false;
-				break;
-			default:
-				JOptionPane.showMessageDialog(null, "Something went wrong");
-			}
-
-		} while (keepGoing);
 	}
 
 	/**

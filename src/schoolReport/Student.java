@@ -14,13 +14,13 @@ public class Student extends Person {
 
 	// Instance variables
 	private int gradeLevel;
-	private LinkedList<Course> courses;
+	private LinkedList<String> courseIDS;
 
 	/**
 	 * Default constructor
 	 */
 	public Student() {
-		this(0, "", "", "", "", "", null, 0, null);
+		this(0, "", "", "", "", "", 0, null);
 	}
 
 	/**
@@ -33,16 +33,16 @@ public class Student extends Person {
 	 * @param messages
 	 */
 	public Student(int userID, String password, String firstName, String lastName, String emailAddress,
-			String phoneNumber, LinkedList<Message> messages, int gradeLevel, LinkedList<Course> courses) {
+			String phoneNumber, int gradeLevel, LinkedList<String> courseIDS) {
 
-		super(userID, password, firstName, lastName, emailAddress, phoneNumber, messages);
+		super(userID, password, firstName, lastName, emailAddress, phoneNumber);
 		this.gradeLevel = gradeLevel;
 
-		if (courses == null) {
-			this.courses = new LinkedList<>();
+		if (courseIDS == null) {
+			this.courseIDS = new LinkedList<>();
 		} else {
-			this.courses = new LinkedList<>();
-			this.courses.addAll(courses);
+			this.courseIDS = new LinkedList<>();
+			this.courseIDS.addAll(courseIDS);
 		}
 	}
 
@@ -56,35 +56,12 @@ public class Student extends Person {
 	}
 
 	/**
-	 * Retrieves the courses as a string
-	 *
-	 * @return courses string
-	 */
-	public String getCourses() {
-
-		String courses = "";
-
-		Iterator<Course> it = this.courses.iterator();
-
-		while (it.hasNext()) {
-			if (this.courses.size() <= 1) {
-				courses += it.next().toString();
-			} else {
-				courses += it.next().toString() + "--";
-			}
-		}
-
-		return courses;
-
-	}
-
-	/**
 	 * Retrieve the courses linked list
 	 *
 	 * @return courses Linked List
 	 */
-	public LinkedList<Course> coursesList() {
-		return this.courses;
+	public LinkedList<String> listOfCourseID() {
+		return this.courseIDS;
 	}
 
 	/**
@@ -104,84 +81,25 @@ public class Student extends Person {
 		}
 	}
 
-	/**
-	 * Set the courses
-	 *
-	 * @param courses
-	 *            linked list
-	 * @return true or false
-	 */
-	public boolean setCourses(LinkedList<Course> courses) {
+	public String convertCourseIds() {
+		String IdList = "";
 
-		if (courses.isEmpty()) {
-			throw new NullPointerException("The list of courses is empty!");
-		} else {
-			this.courses.addAll(courses);
-			return true;
-		}
-	}
+		Iterator<String> it = this.listOfCourseID().iterator();
 
-	/**
-	 * Method to view the grade report for the student of all the courses he or she
-	 * is enrolled in
-	 *
-	 * @return grade report string
-	 */
-	public String viewMyGradeReport() {
-
-		String output = "";
-
-		// If courses is empty, show error. Else, add to string of grade report
-		if ((this.coursesList().size() == 0) || (this.coursesList() == null)) {
-			throw new NullPointerException("No courses to view grade report");
-		} else {
-
-			output += "Student Grade Report\n\n";
-
-			Iterator<Course> it = this.coursesList().iterator();
-
-			while (it.hasNext()) {
-				Course temp = it.next();
-				output += "Course Title:" + " " + temp.getCourseTitle() + " | " + "Midterm Grade: "
-						+ temp.getGradeBook().getMidtermGrade() + " | " + "Final Grade: "
-						+ temp.getGradeBook().getFinalGrade() + "\n";
+		while (it.hasNext()) {
+			if (this.listOfCourseID().size() <= 1) {
+				IdList += it.next().toString();
+			} else {
+				IdList += it.next().toString() + "-";
 			}
-
 		}
 
-		return output;
-
+		return IdList;
 	}
 
-	/*
-	 * Add message method to add a message to the linked list of messages
-	 */
-	@Override
-	public void addMessage(Message message) {
-		this.getMessagesList().add(message);
-	}
+	public String writeAttributesToFile() {
 
-	/*
-	 * View message to view the messages of the student
-	 */
-	@Override
-	public String viewMessage() {
-
-		if ((this.getMessagesList().size() == 0) || (this.getMessages() == null)) {
-			throw new NullPointerException("There are no messages to view. Empty inbox");
-		} else {
-
-			String output = "Your Messages:" + "\n" + "\n";
-
-			Iterator<Message> it = this.getMessagesList().iterator();
-
-			while (it.hasNext()) {
-				Message temp = it.next();
-				output += temp.getMessage() + "\n";
-			}
-
-			return output;
-		}
+		return super.writeAttributesToFile() + this.getGradeLevel() + "," + this.convertCourseIds();
 	}
 
 	/*
@@ -192,7 +110,7 @@ public class Student extends Person {
 	@Override
 	public String toString() {
 
-		String output = super.toString() + "," + this.getGradeLevel() + "," + this.getCourses();
+		String output = super.toString() + "\n" + "Grade: " + this.gradeLevel;
 
 		return output;
 	}
