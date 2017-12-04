@@ -5,6 +5,7 @@ import java.util.ListIterator;
 
 public class Parent extends Person {
 
+	// instance variables
 	private LinkedList<Student> studentList;
 	private LinkedList<Integer> studentIds;
 
@@ -29,9 +30,15 @@ public class Parent extends Person {
 	 *            -> Phone number
 	 * @param messages
 	 *            -> Messages
-	 * @parem aStudent -> Student
-	 * @parem aTeacher -> Teacher
-	 * @paremt anAdmin -> Administrator
+	 * @param aStudent
+	 *            -> Student
+	 * @param aTeacher
+	 *            -> Teacher
+	 * @param anAdmin
+	 *            -> Administrator
+	 * @param studentIds
+	 *            -> List of StudentIDs
+	 *
 	 */
 	public Parent(int userId, String password, String firstName, String lastName, String emailAddress,
 			String phoneNumber, LinkedList<Integer> studentIds) {
@@ -46,7 +53,6 @@ public class Parent extends Person {
 
 	}
 
-	// Accessor Methods*****
 	/**
 	 * Retrieve the Student List
 	 *
@@ -67,7 +73,6 @@ public class Parent extends Person {
 		return sList;
 	}
 
-	// Set Methods*****
 	/**
 	 * Adds the student to the list
 	 *
@@ -131,6 +136,11 @@ public class Parent extends Person {
 		return studentList;
 	}
 
+	/*
+	 * Method to write parent attributes to the file
+	 *
+	 * @return String of the parent attributes
+	 */
 	public String writeAttributesToFile() {
 		return super.writeAttributesToFile() + this.convertStudentIds();
 	}

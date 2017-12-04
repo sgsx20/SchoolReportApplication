@@ -41,8 +41,11 @@ public class Application {
 		FileManager.addNewUserToFile(p1);
 
 		Teacher t1 = new Teacher(3, "pass", "Lonzo", "Ball", "lzo@gmail.com", "444-222-1111", "Monday(11:00AM - 1:PM)",
-				studentIDs, courseIDs);
+				courseIDs);
 		FileManager.addNewUserToFile(t1);
+
+		Administrator a1 = new Administrator(3, "pass", "Lonzo", "Ball", "lzo@gmail.com", "444-222-1111");
+		FileManager.addNewUserToFile(a1);
 
 		JDialog.setDefaultLookAndFeelDecorated(true);
 
@@ -181,7 +184,7 @@ public class Application {
 			showParentMenu(userID, user);
 			break;
 		case "Administrator":
-			// showAdminMenu(userID, user);
+			showAdminMenu(userID, user);
 			break;
 		default:
 			JOptionPane.showMessageDialog(null, "Code should never get till here");
@@ -476,12 +479,22 @@ public class Application {
 		} while (keepGoing);
 	}
 
+	/**
+	 * Enter grades method allows the teacher to enter student grades for a course.
+	 * The method prompts the user to select a course, then if the course is found,
+	 * it prompts the user for the student's ID, midterm, and final grades and
+	 * enters it in the gradebook.
+	 *
+	 * @param user
+	 * @param userID
+	 */
 	public static void enterGrades(Teacher user, int userID) {
 
 		boolean keepGoing = true;
 
 		do {
 
+			// Prompt for the course
 			String[] courseOptions = user.listOfCourseID().toArray(new String[user.listOfCourseID().size()]);
 
 			Object result = JOptionPane.showInputDialog(null,
@@ -494,25 +507,39 @@ public class Application {
 				selection = "Exit";
 				break;
 			} else {
-				String[] studentList = user.convertStudentIDtoString()
-						.toArray(new String[user.convertStudentIDtoString().size()]);
 
-				Object studentSelection = JOptionPane.showInputDialog(null,
-						"Select a Student ID whose grades you want to enter \n\n Click cancel when you're done", "",
-						JOptionPane.QUESTION_MESSAGE, null, studentList, studentList[0]);
+				int midtermGrade = 0;
+				int finalGrade = 0;
+				boolean gradeValid = false;
+				String askForStudentID = "";
+				int studentID = 0;
 
-				String student = (String) studentSelection;
+				// Prompt for student ID
+				do {
+					askForStudentID = JOptionPane.showInputDialog("Enter Student ID to enter grades for");
 
-				if (student == null) {
-					student = "Exit";
-					break;
-				} else {
+					// If user clicks cancel, exit.
+					if (askForStudentID == null) {
+						break;
+					} else {
+						try {
+							studentID = Integer.parseInt(askForStudentID);
+							gradeValid = true;
+						} catch (NumberFormatException e) {
+							JOptionPane.showMessageDialog(null, "Invalid input for User ID. Try again.");
+							askForStudentID = JOptionPane.showInputDialog("Enter your User ID");
+							if (askForStudentID == null) {
+								break;
+							}
+						}
+					}
 
-					int midtermGrade = 0;
-					int finalGrade = 0;
-					boolean gradeValid = false;
+					// If user ID is valid, continue
+					if (gradeValid) {
 
-					do {
+						gradeValid = false;
+
+						// Prompt for midterm and final grade
 						try {
 							midtermGrade = Integer.parseInt(JOptionPane.showInputDialog("Enter Midterm Grade:"));
 						} catch (NumberFormatException ex) {
@@ -534,12 +561,14 @@ public class Application {
 								gradeValid = true;
 							}
 						}
-					} while (!gradeValid);
 
-					if (gradeValid) {
-
-						FileManager.enterGrades(selection, student, midtermGrade, finalGrade);
 					}
+				} while (!gradeValid);
+
+				// if midterm and final grade is valid, enter in gradebook
+				if (gradeValid) {
+
+					FileManager.enterGrades(selection, askForStudentID, midtermGrade, finalGrade);
 				}
 
 			}
@@ -668,16 +697,22 @@ public class Application {
 		LinkedList<Course> coursesOffered = new LinkedList<>();
 		coursesOffered = FileManager.getCourseList();
 
+		JOptionPane.showMessageDialog(null, coursesOffered.toString());
+
 		// get list of courses offered
 		String[] options = new String[coursesOffered.size() + 1];
+
+		// fill options array
 		for (int x = 0; x < (options.length - 1); x++) {
 			options[x] = coursesOffered.get(x).getCourseID();
 		}
-
 		options[options.length - 1] = "Exit";
+
 		boolean addMore = true;
 		int courseCount = 0;
 
+		// continue prompting for course selection until the user is done
+		// or max selections is reached
 		do {
 			Object result = JOptionPane.showInputDialog(null, "Select Course", "", JOptionPane.QUESTION_MESSAGE, null,
 					options, options[0]);
@@ -685,10 +720,12 @@ public class Application {
 			String courseSelected = (String) result;
 			int index = 0;
 
+			// if user select "Exit" - terminate functionality
 			if (courseSelected.equals("Exit")) {
 				addMore = false;
 			} else {
-				if ((courseSelected != null) || (addMore)) {
+				// check if "Cancel" was hit
+				if ((courseSelected != null) && (addMore)) {
 					// get index of the selection
 					index = 0;
 					boolean found = false;
@@ -701,21 +738,28 @@ public class Application {
 					} while (!found && (index < coursesOffered.size()));
 
 					if (found) {
-						// LOOP --- select course up to 8 and add student to course
 						int courseSize = coursesOffered.get(index).getNumStudents();
 
 						if (courseSize < Course.NUM_OF_STUDENTS_MAX) {
 							//////////
 							/////////////////////
 							// add student to gradebook
-							int gBook = coursesOffered.get(index).getGradeBookID();
-							GradeBook getBook = FileManager.getGradeBook(gBook);
-							boolean addedStudent = getBook.addStudent(newUser.getUserID());
+							String gBookID = coursesOffered.get(index).getGradeBookID();
+							GradeBook getBook = FileManager.getGradeBook(gBookID);
 
-							if (addedStudent) {
-								// increment courseSize++
-								courseCount++;
-								coursesOffered.get(index).setNumStudents(courseCount);
+							if (getBook != null) {
+								boolean addedStudent = getBook.addStudent(newUser.getUserID());
+								if (addedStudent) {
+									// increment courseSize++ and update
+									courseCount++;
+									coursesOffered.get(index).setNumStudents(courseCount);
+
+									// rewrite GradeBook record
+									FileManager.updateGradeBookFile(getBook);
+
+									// rewrite Course record
+									FileManager.updateCourseFile(coursesOffered);
+								}
 							}
 						} else {
 							JOptionPane.showMessageDialog(null, "Sorry, course is full!");
@@ -737,7 +781,37 @@ public class Application {
 	 *            parent.
 	 */
 	public static void populateUserDetails(Parent newUser) {
-		// children LL
+		LinkedList<Integer> childrenIDs = new LinkedList<>();
+		boolean valid = false;
+		int numChildren = 0;
+		int userID = 0;
+		do {
+			try {
+				numChildren = Integer.parseInt(JOptionPane.showInputDialog("Enter # of children to add: "));
+				valid = true;
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, "Please enter a valid # ");
+			}
+		} while (!valid);
+		valid = false;
+
+		if (numChildren > 0) {
+			for (int x = 0; x < numChildren; x++) {
+				do {
+					try {
+						userID = Integer.parseInt(JOptionPane.showInputDialog("Enter child's userID: "));
+						valid = true;
+						childrenIDs.add(userID);
+					} catch (NumberFormatException e) {
+						JOptionPane.showMessageDialog(null, "Please enter a valid ID (####) ");
+					}
+				} while (!valid);
+				valid = false;
+			}
+
+			newUser.setStudentIds(childrenIDs);
+		}
+
 	}
 
 	/**

@@ -26,11 +26,22 @@ public class Student extends Person {
 	/**
 	 * Specific Constructor
 	 *
+	 * @param userID
+	 *            -> User ID
+	 * @param password
+	 *            -> Password for student
 	 * @param firstName
+	 *            -> First name of student
 	 * @param lastName
+	 *            -> Last name of student
 	 * @param emailAddress
+	 *            -> Email address of student
 	 * @param phoneNumber
-	 * @param messages
+	 *            -> Phone number of student
+	 * @param gradeLevel
+	 *            -> Grade level of student
+	 * @param courseIDS
+	 *            -> Course IDs of the courses for the student
 	 */
 	public Student(int userID, String password, String firstName, String lastName, String emailAddress,
 			String phoneNumber, int gradeLevel, LinkedList<String> courseIDS) {
@@ -81,12 +92,20 @@ public class Student extends Person {
 		}
 	}
 
+	/**
+	 * The method below converts the course IDs into a string that is split by
+	 * delimiters. This is then used to write to the student records text file.
+	 *
+	 * @return String of course ids
+	 */
 	public String convertCourseIds() {
 		String IdList = "";
 
 		Iterator<String> it = this.listOfCourseID().iterator();
 
 		while (it.hasNext()) {
+
+			// if there are less than 1 course Ids, do this. Else, add with a "-" after it.
 			if (this.listOfCourseID().size() <= 1) {
 				IdList += it.next().toString();
 			} else {
@@ -97,6 +116,12 @@ public class Student extends Person {
 		return IdList;
 	}
 
+	/*
+	 * The method concatenates and returns the student attributes to the student
+	 * records text file
+	 *
+	 * @return String of the student information
+	 */
 	public String writeAttributesToFile() {
 
 		return super.writeAttributesToFile() + this.getGradeLevel() + "," + this.convertCourseIds();

@@ -30,7 +30,6 @@ public class FileManager {
 	 *            -> Password
 	 * @param userType
 	 *            -> User Type
-	 * @return User Object
 	 */
 	public static Person checkCredentials(int userID, String password, String userType) {
 
@@ -42,11 +41,13 @@ public class FileManager {
 		BufferedReader br = null;
 
 		try {
+			// Open the user's file
 			br = new BufferedReader(new FileReader(new File(filePath)));
 
 			String hasLine = null;
 			boolean flag = false;
 
+			// loop through the file
 			while (((hasLine = br.readLine()) != null) && !flag) {
 
 				String line = hasLine;
@@ -55,8 +56,10 @@ public class FileManager {
 				int id = Integer.parseInt(split[0]);
 				String pwd = split[1];
 
+				// if user id matches, continue
 				if (userID == id) {
 
+					// if password matches, continue
 					if (password.equalsIgnoreCase(pwd)) {
 
 						// If user ID and password match, create user object
@@ -64,9 +67,9 @@ public class FileManager {
 						flag = true;
 					}
 
-				} // user ID
+				}
 
-			} // while loop
+			}
 
 			br.close();
 
@@ -80,6 +83,12 @@ public class FileManager {
 
 	}
 
+	/**
+	 * Method to run through the courses.txt file and get all the courses as a
+	 * linked list
+	 *
+	 * @return LinkedList of courses
+	 */
 	public static LinkedList<Course> getCourseList() {
 
 		LinkedList<Course> courses = new LinkedList<>();
@@ -87,15 +96,17 @@ public class FileManager {
 		BufferedReader br;
 
 		try {
+			// Open the courses text file
 			br = new BufferedReader(new FileReader(new File("./src/schoolReport/Courses.txt")));
 
 			String hasLine = null;
 
+			// loop through the file and add each course to the linked list
 			while (((hasLine = br.readLine()) != null)) {
 				String[] split = hasLine.split(",");
 
 				Course temp = new Course(split[0], split[1], Integer.parseInt(split[2]), Integer.parseInt(split[3]),
-						Integer.parseInt(split[4]));
+						split[4]);
 				courses.add(temp);
 			}
 
@@ -120,13 +131,12 @@ public class FileManager {
 	 *            -> User type
 	 * @param recordLine
 	 *            -> Record to tokenize and make an object
-	 * @return -> Type of user Object
 	 */
 	private static Person getUserObject(String userType, String[] recordLine) {
 
 		Person userCreated = null;
 
-		// Depending on user type, create that user and send it back
+		// Depending on user type, create that user with all their info and send it back
 		switch (userType) {
 		case "Teacher":
 			LinkedList<String> courseList = new LinkedList<>();
@@ -137,20 +147,11 @@ public class FileManager {
 				courseList.add(courseListSplit[x]);
 			}
 
-			LinkedList<Integer> teacherStudentIDs = new LinkedList<>();
-
-			String[] teacherStudentIDSplit = recordLine[7].split("-");
-
-			for (int x = 0; x < teacherStudentIDSplit.length; x++) {
-				teacherStudentIDs.add(Integer.parseInt(teacherStudentIDSplit[x]));
-			}
-
 			userCreated = new Teacher(Integer.parseInt(recordLine[0]), recordLine[1], recordLine[2], recordLine[3],
-					recordLine[4], recordLine[5], recordLine[6], teacherStudentIDs, courseList);
+					recordLine[4], recordLine[5], recordLine[6], courseList);
 
 			break;
 		case "Student":
-
 			LinkedList<String> courseIDs = new LinkedList<>();
 
 			String[] courseIDSplit = recordLine[7].split("-");
@@ -183,6 +184,13 @@ public class FileManager {
 		return userCreated;
 	}
 
+	/**
+	 * Method to view the message of the user that is logged in.
+	 *
+	 * @param userID
+	 *            -> User ID of the user that is logged in
+	 * @return String of messages for the user
+	 */
 	public static String viewMessages(int userID) {
 
 		String messages = "";
@@ -190,16 +198,20 @@ public class FileManager {
 
 		BufferedReader br;
 		try {
+
+			// Open the Messages text file
 			br = new BufferedReader(new FileReader(new File("./src/schoolReport/Messages.txt")));
 
 			String hasLine = null;
 
 			messages = "Your Messages: \n\n";
 
+			// Loop through the messages text file and get the messages for the user
 			while (((hasLine = br.readLine()) != null)) {
 
 				String[] splitMessages = hasLine.split(",");
 
+				// Get the messages and add it to the string
 				for (int x = 0; x < splitMessages.length; x++) {
 
 					String[] eachMessage = splitMessages[x].split("-");
@@ -211,6 +223,7 @@ public class FileManager {
 				}
 			}
 
+			// If no messages are found, put message below in string to return
 			if (!found) {
 				messages = "You have no messages to view";
 			}
@@ -236,8 +249,7 @@ public class FileManager {
 	 *            -> Recipient ID
 	 * @param message
 	 *            -> Message to be added
-	 * @param userType
-	 *            -> user type
+	 *
 	 */
 	public static void sendMessage(int senderID, int receipientID, String message) {
 
@@ -249,10 +261,12 @@ public class FileManager {
 
 		try {
 
+			// Original Messages text file
 			File path = new File(filePath);
 			FileReader reader = new FileReader(path);
 			br = new BufferedReader(reader);
 
+			// Temp file
 			File tempFile = new File("./src/schoolReport/tempFile.txt");
 			FileWriter fw = new FileWriter(tempFile, true);
 			bw = new BufferedWriter(fw);
@@ -269,6 +283,7 @@ public class FileManager {
 
 				int id = Integer.parseInt(split[1]);
 
+				// If the ID matches, write the new message to that line.
 				if (receipientID == id) {
 					bw.write(line + Integer.toString(senderID) + "-" + Integer.toString(receipientID) + "-" + message);
 					bw.newLine();
@@ -285,6 +300,7 @@ public class FileManager {
 				bw.close();
 			}
 
+			// Once all copying of the file contents is done, rename to the file
 			br.close();
 			bw.close();
 			path.delete();
@@ -310,6 +326,7 @@ public class FileManager {
 
 		BufferedWriter bw = null;
 
+		// Depending on type of user, add that user's info to the user's file
 		try {
 			if (userToAdd instanceof Student) {
 				filePath = "./src/schoolReport/studentRecords.txt";
@@ -348,8 +365,8 @@ public class FileManager {
 	/**
 	 * Method to get the teacher hours for the student
 	 *
-	 * @param object
-	 *            -> Student object
+	 * @param userID
+	 *            -> User ID of the teacher whose office hours to receive
 	 * @return string output of the teacher hours
 	 */
 	public static String getTeacherHours(int userID) {
@@ -358,10 +375,12 @@ public class FileManager {
 		String output = "Teacher Office Hours\n\n";
 
 		try {
+			// Open teacher records file
 			br = new BufferedReader(new FileReader(new File("./src/schoolReport/teacherRecords.txt")));
 
 			String hasLine = null;
 
+			// loop through the file to find the teacher
 			while ((hasLine = br.readLine()) != null) {
 
 				String line = hasLine;
@@ -369,6 +388,7 @@ public class FileManager {
 
 				int id = Integer.parseInt(split[0]);
 
+				// if teacher id matches, get his or her office hours
 				if (userID == id) {
 					output += "Office Hours: " + split[6];
 				}
@@ -413,6 +433,172 @@ public class FileManager {
 
 		return filePath;
 	}
+
+	/**
+	 * MEthod that the teacher will use to enter grades for a student for a course
+	 *
+	 * @param courseID
+	 *            -> the Course
+	 * @param studentID
+	 *            -> ID of student
+	 * @param midtermGrade
+	 *            -> Student midterm grade
+	 * @param finalGrade
+	 *            -> Student final grade
+	 */
+	public static void enterGrades(String courseID, String studentID, int midtermGrade, int finalGrade) {
+
+		BufferedReader br = null;
+		BufferedWriter bw = null;
+		boolean courseFound = false;
+		File path = null;
+		File tempFile = null;
+
+		try {
+
+			// Open courses file
+			br = new BufferedReader(new FileReader(new File("./src/schoolReport/Courses.txt")));
+
+			String hasLine = null;
+
+			// loop thorugh file to see if the course exists
+			while (((hasLine = br.readLine()) != null) && !courseFound) {
+
+				String line = hasLine;
+
+				String[] split = line.split(",");
+
+				// If course found, set flag to true
+				if (split[0].equalsIgnoreCase(courseID)) {
+					courseFound = true;
+				}
+
+			}
+
+			// if flag is true, continue
+			if (courseFound) {
+				br.close();
+
+				// Open gradebook file
+				br = new BufferedReader(new FileReader(new File("./src/schoolReport/GradeBook.txt")));
+
+				String getLine = null;
+
+				// loop through grade book file
+				while (((getLine = br.readLine()) != null)) {
+
+					String theLine = getLine;
+
+					String[] split = theLine.split(",");
+
+					// If the gradebook ID matches, continue.
+					if (split[0].equalsIgnoreCase("G" + courseID)) {
+						br.close();
+
+						path = new File("./src/schoolReport/GradeBook.txt");
+						FileReader reader = new FileReader(path);
+						br = new BufferedReader(reader);
+
+						tempFile = new File("./src/schoolReport/gradeBookTempFile.txt");
+						FileWriter fw = new FileWriter(tempFile, true);
+						bw = new BufferedWriter(fw);
+
+						String getTheLine = null;
+
+						while (((getTheLine = br.readLine()) != null)) {
+
+							String line = getTheLine;
+
+							String[] replaceSplit = line.split(",");
+							String[] eachGrade = null;
+
+							if (replaceSplit[0].equalsIgnoreCase("G" + courseID)) {
+
+								// If there are no grades, add the grade.
+								if (replaceSplit.length <= 1) {
+									bw.write(line + studentID + "-" + midtermGrade + "-" + finalGrade + "--");
+									bw.newLine();
+								} else {
+
+									// If there are grades already in the gradebook,
+									// append to the end of the list of grades
+									eachGrade = replaceSplit[1].trim().split("--");
+
+									Vector<String> grades = new Vector<>();
+
+									for (int x = 0; x < eachGrade.length; x++) {
+										grades.add(eachGrade[x].trim() + "--");
+									}
+
+									grades.add(studentID.trim() + "-" + midtermGrade + "-" + finalGrade);
+
+									Iterator<String> it = grades.iterator();
+									String temp = "";
+
+									while (it.hasNext()) {
+										temp += it.next();
+									}
+
+									bw.write(replaceSplit[0] + "," + temp);
+									bw.newLine();
+								}
+							} else {
+								bw.write(line);
+								bw.newLine();
+							}
+						}
+
+					}
+
+				}
+				br.close();
+				bw.close();
+				path.delete();
+				tempFile.renameTo(path);
+			} else {
+				JOptionPane.showMessageDialog(null, "The Course does not exist!");
+				br.close();
+			}
+
+		} catch (FileNotFoundException ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+
+	}
+
+	/**
+	 * Method to view the grade report
+	 *
+	 * @param user
+	 *            -> Student object whose grade report to view
+	 * @return String of the grade report
+	 */
+	public static String viewGradeReport(Student user) {
+
+		String output = "";
+
+		// If courses don't exist, throw error.
+		if ((user.listOfCourseID().size() == 0) || (user.listOfCourseID() == null)) {
+			throw new NullPointerException("No courses to view grade report");
+		} else {
+
+			// If courses exist, get the courses and add to string to return
+			output += user.getFirstName().substring(0, 1).toUpperCase() + user.getFirstName().substring(1)
+					+ "'s Grade Report\n\n";
+
+			for (int x = 0; x < user.listOfCourseID().size(); x++) {
+				output += "Course:  " + user.listOfCourseID().get(x) + "\n";
+				output += getCourseGrade(user.listOfCourseID().get(x), user.getUserID()) + "\n\n";
+			}
+
+		}
+
+		return output;
+	}
+
+	// =============== Ehsan, Add Comments for method below =====================
 
 	/**
 	 * This method will return a user based on the parameters.
@@ -536,10 +722,10 @@ public class FileManager {
 			}
 			br.close();
 
-			FileWriter writer = new FileWriter(path, true);
+			FileWriter writer = new FileWriter(path);
 			bw = new BufferedWriter(writer);
 
-			bw.append(Integer.toString(newID));
+			bw.write(Integer.toString(newID));
 			bw.close();
 		} catch (FileNotFoundException ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -548,92 +734,6 @@ public class FileManager {
 		}
 
 		return newID;
-	}
-
-	public static void enterGrades(String courseID, String studentID, int midtermGrade, int finalGrade) {
-
-		BufferedReader br = null;
-		BufferedWriter bw = null;
-
-		try {
-
-			File path = new File("./src/schoolReport/GradeBook.txt");
-			FileReader reader = new FileReader(path);
-			br = new BufferedReader(reader);
-
-			File tempFile = new File("./src/schoolReport/gradeBookTempFile.txt");
-			FileWriter fw = new FileWriter(tempFile, true);
-			bw = new BufferedWriter(fw);
-
-			String hasLine = null;
-
-			while (((hasLine = br.readLine()) != null)) {
-
-				String line = hasLine;
-
-				String[] split = line.split(",");
-				String[] eachGrade = null;
-
-				if (split[0].equalsIgnoreCase("G" + courseID)) {
-
-					if (split.length <= 1) {
-						bw.write(line + studentID + "-" + midtermGrade + "-" + finalGrade + "--");
-						bw.newLine();
-					} else {
-						eachGrade = split[1].trim().split("--");
-						Vector<String> grades = new Vector<>();
-						for (int x = 0; x < eachGrade.length; x++) {
-							grades.add(eachGrade[x].trim() + "--");
-						}
-						grades.add(studentID.trim() + "-" + midtermGrade + "-" + finalGrade);
-
-						Iterator<String> it = grades.iterator();
-						String temp = "";
-
-						while (it.hasNext()) {
-							temp += it.next();
-						}
-
-						bw.write(split[0] + "," + temp);
-						bw.newLine();
-					}
-				} else {
-					bw.write(line);
-					bw.newLine();
-				}
-			}
-
-			br.close();
-			bw.close();
-			path.delete();
-			tempFile.renameTo(path);
-		} catch (FileNotFoundException ex) {
-			JOptionPane.showMessageDialog(null, ex.getMessage());
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage());
-		}
-
-	}
-
-	public static String viewGradeReport(Student user) {
-
-		String output = "";
-
-		if ((user.listOfCourseID().size() == 0) || (user.listOfCourseID() == null)) {
-			throw new NullPointerException("No courses to view grade report");
-		} else {
-
-			output += user.getFirstName().substring(0, 1).toUpperCase() + user.getFirstName().substring(1)
-					+ "'s Grade Report\n\n";
-
-			for (int x = 0; x < user.listOfCourseID().size(); x++) {
-				output += "Course:  " + user.listOfCourseID().get(x) + "\n";
-				output += getCourseGrade(user.listOfCourseID().get(x), user.getUserID()) + "\n\n";
-			}
-
-		}
-
-		return output;
 	}
 
 	public static String getCourseGrade(String courseID, int userID) {
@@ -727,6 +827,97 @@ public class FileManager {
 		}
 
 		return output;
+	}
+
+	public static GradeBook getGradeBook(String gBookID) {
+		GradeBook gBook = null;
+
+		// get book record
+		String recordLine = getGradeBookRecords(gBookID);
+		String[] records = recordLine.split("--");
+
+		// store record into list
+		LinkedList<String> studentGradeList = new LinkedList<>();
+		for (int x = 0; x < records.length; x++) {
+			studentGradeList.add(records[x]);
+		}
+
+		// store into object
+		gBook = new GradeBook(gBookID, studentGradeList);
+
+		// return object
+		return gBook;
+	}
+
+	public static void updateGradeBookFile(GradeBook updateBook) {
+		BufferedReader br = null;
+		BufferedWriter bw = null;
+
+		try {
+			File path = new File("./src/schoolReport/GradeBook.txt");
+			FileReader reader = new FileReader(path);
+			br = new BufferedReader(reader);
+
+			File tempFile = new File("./src/schoolReport/gradeBookTempFile.txt");
+			FileWriter fw = new FileWriter(tempFile, true);
+			bw = new BufferedWriter(fw);
+
+			String hasLine = null;
+
+			while (((hasLine = br.readLine()) != null)) {
+
+				String line = hasLine;
+
+				String[] split = line.split(",");
+
+				if (split[0].equalsIgnoreCase(updateBook.getGradeBookID())) {
+					bw.write(updateBook.gradeBookToFile());
+					bw.newLine();
+				} else {
+					bw.write(line);
+					bw.newLine();
+				}
+			}
+
+			br.close();
+			bw.close();
+			path.delete();
+			tempFile.renameTo(path);
+		} catch (FileNotFoundException ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+	}
+
+	public static void updateCourseFile(LinkedList<Course> updateCourseList) {
+		BufferedWriter bw = null;
+
+		try {
+			File path = new File("./src/schoolReport/Courses.txt");
+
+			File tempFile = new File("./src/schoolReport/coursesTempFile.txt");
+			FileWriter fw = new FileWriter(tempFile, true);
+			bw = new BufferedWriter(fw);
+
+			Iterator<Course> it = updateCourseList.iterator();
+
+			String fileInput = "";
+
+			while (it.hasNext()) {
+				fileInput += it.next().writeCourseToFile();
+				bw.write(fileInput);
+				bw.newLine();
+			}
+
+			bw.close();
+			path.delete();
+			tempFile.renameTo(path);
+		} catch (FileNotFoundException ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
 	}
 
 }

@@ -2,10 +2,9 @@ package schoolReport;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 /**
- * @author Shreejesh Shresta
+ * @author Shreejesh Shrestha
  *
  */
 public class Teacher extends Person {
@@ -14,7 +13,6 @@ public class Teacher extends Person {
 	public static final int MAX_CLASSES_TO_TEACH = 4;
 
 	// Instance variables
-	private LinkedList<Integer> studentIds;
 	private LinkedList<String> courseIDS;
 	private String officeHours;
 
@@ -22,21 +20,31 @@ public class Teacher extends Person {
 	 * Default constructor
 	 */
 	public Teacher() {
-		this(0, "", "", "", "", "", "", null, null);
+		this(0, "", "", "", "", "", "", null);
 	}
 
 	/**
-	 * Specific constructor
+	 * Specific Constructor
 	 *
+	 * @param userID
+	 *            -> User ID
 	 * @param password
+	 *            -> Password
 	 * @param firstName
+	 *            -> First Name
 	 * @param lastName
+	 *            -> Last Name
 	 * @param emailAddress
+	 *            -> Email Address
 	 * @param phoneNumber
-	 * @param messages
+	 *            -> Phone Number
+	 * @param officeHours
+	 *            -> Office Hours
+	 * @param courseIDS
+	 *            -> Course IDs
 	 */
 	public Teacher(int userID, String password, String firstName, String lastName, String emailAddress,
-			String phoneNumber, String officeHours, LinkedList<Integer> studentIds, LinkedList<String> courseIDS) {
+			String phoneNumber, String officeHours, LinkedList<String> courseIDS) {
 		super(userID, password, firstName, lastName, emailAddress, phoneNumber);
 
 		this.officeHours = officeHours;
@@ -47,46 +55,22 @@ public class Teacher extends Person {
 			this.courseIDS.addAll(courseIDS);
 		}
 
-		if (!studentIds.isEmpty()) {
-			this.studentIds = new LinkedList<>();
-			this.studentIds.addAll(studentIds);
-		} else {
-			throw new IllegalArgumentException("Parent was not created.");
-		}
-
 	}
 
+	/**
+	 * Get the list of course IDs
+	 *
+	 * @return linked list of Course ID
+	 */
 	public LinkedList<String> listOfCourseID() {
 		return this.courseIDS;
 	}
 
-	public LinkedList<Integer> getStudentIds() {
-		LinkedList<Integer> sList = new LinkedList<>(this.studentIds);
-		return sList;
-	}
-
-	public LinkedList<String> convertStudentIDtoString() {
-		LinkedList<String> convertedStudentIDs = new LinkedList<>();
-
-		Iterator it = this.getStudentIds().iterator();
-
-		while (it.hasNext()) {
-			String temp = it.next().toString();
-			convertedStudentIDs.add(temp);
-		}
-
-		return convertedStudentIDs;
-	}
-
-	public String convertStudentIds() {
-		String studentList = "";
-		ListIterator<Integer> listIterator = this.studentIds.listIterator();
-		while (listIterator.hasNext()) {
-			studentList += listIterator.next() + "-";
-		}
-		return studentList;
-	}
-
+	/**
+	 * Get the list of course IDs as a String separated with a delimiter comma
+	 *
+	 * @return String with course IDs separated by comma
+	 */
 	public String convertCourseIds() {
 		String IdList = "";
 
@@ -103,10 +87,14 @@ public class Teacher extends Person {
 		return IdList;
 	}
 
+	/*
+	 * Method to write the Teacher attributes to the file
+	 *
+	 * @return String of the teacher attributes to write
+	 */
 	public String writeAttributesToFile() {
 
-		return super.writeAttributesToFile() + this.getOfficeHours() + "," + this.convertStudentIds() + ","
-				+ this.convertCourseIds();
+		return super.writeAttributesToFile() + this.getOfficeHours() + "," + this.convertCourseIds();
 	}
 
 	/**
@@ -134,6 +122,11 @@ public class Teacher extends Person {
 		}
 	}
 
+	/*
+	 * String representation of the Teacher
+	 *
+	 * @return String representation
+	 */
 	@Override
 	public String toString() {
 		String output = super.toString() + "\n" + "Office Hours: " + this.officeHours;

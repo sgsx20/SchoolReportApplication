@@ -22,18 +22,20 @@ public abstract class Person {
 	}
 
 	/**
-	 * Specific Constructor.
+	 * Specific Constructor
 	 *
+	 * @param userID
+	 *            -> User ID
+	 * @param password
+	 *            -> Password
 	 * @param firstName
-	 *            -> First name
+	 *            -> First Name
 	 * @param lastName
-	 *            -> Last name
+	 *            -> Last Name
 	 * @param emailAddress
-	 *            -> Email
+	 *            -> Email address
 	 * @param phoneNumber
-	 *            -> Phone number
-	 * @param messages
-	 *            -> Messages
+	 *            -> Phone Number
 	 */
 	public Person(int userID, String password, String firstName, String lastName, String emailAddress,
 			String phoneNumber) {
@@ -120,6 +122,13 @@ public abstract class Person {
 		}
 	}
 
+	/**
+	 * Set the password
+	 *
+	 * @param password
+	 *            -> Password to set
+	 * @return true or false
+	 */
 	public boolean setPassword(String password) {
 		boolean valid = false;
 		if (!password.equals("")) {
@@ -135,6 +144,13 @@ public abstract class Person {
 
 	}
 
+	/**
+	 * Method for further password validation
+	 *
+	 * @param password
+	 *            -> Password to validate
+	 * @return true or false
+	 */
 	public boolean isValidPassword(String password) {
 		boolean valid = false;
 		int MIN_PASSWORD_LENGTH = 6;
@@ -217,6 +233,13 @@ public abstract class Person {
 
 	}
 
+	/**
+	 * Method to further validate the email
+	 *
+	 * @param email
+	 *            -> Email to set
+	 * @return true or false
+	 */
 	public boolean isValidEmail(String email) {
 		boolean valid = false;
 		int MIN_EMAIL_LENGTH = 6;
@@ -280,6 +303,12 @@ public abstract class Person {
 
 	}
 
+	/**
+	 * Method to write all the attributes to the file. Method adds the strings
+	 * together and returns it
+	 *
+	 * @return String of the concatenated values
+	 */
 	public String writeAttributesToFile() {
 		String toFile = "";
 
@@ -293,19 +322,6 @@ public abstract class Person {
 		return toFile;
 	}
 
-	// public String writeMessageToFile() {
-	// String message = "";
-	//
-	// message = this.getMessages();
-	//
-	// return message;
-	// }
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see java.lang.Object#toString()
-	 */
 	/*
 	 * To String representation of the Person
 	 *

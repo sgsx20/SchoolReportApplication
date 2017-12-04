@@ -12,25 +12,30 @@ public class Course {
 	private String courseTitle;
 	private int numStudents;
 	private int instructorID;
-	private int gradeBookID;
+	private String gradeBookID;
 
 	/**
 	 * Default constructor
 	 */
 	public Course() {
-		this("", "", 0, 0, 0);
+		this("", "", 0, 0, "");
 	}
 
 	/**
-	 * SPecific Constructor
+	 * Specific Constructor
 	 *
 	 * @param courseID
-	 * @param numStudents
+	 *            -> Course ID
 	 * @param courseTitle
+	 *            -> Course Title
+	 * @param numStudents
+	 *            -> Number of students
 	 * @param instructorID
-	 * @param grades
+	 *            -> Instructor ID
+	 * @param gradeBookID
+	 *            -> Grade Book ID
 	 */
-	public Course(String courseID, String courseTitle, int numStudents, int instructorID, int gradeBookID) {
+	public Course(String courseID, String courseTitle, int numStudents, int instructorID, String gradeBookID) {
 		this.courseID = courseID;
 		this.courseTitle = courseTitle;
 		this.numStudents = numStudents;
@@ -74,7 +79,12 @@ public class Course {
 		return instructorID;
 	}
 
-	public int getGradeBookID() {
+	/**
+	 * Get the grade book ID
+	 *
+	 * @return gradeBookID
+	 */
+	public String getGradeBookID() {
 		return this.gradeBookID;
 	}
 
@@ -98,6 +108,7 @@ public class Course {
 	 * Set the number of students
 	 *
 	 * @param numStudents
+	 *            -> Num of students
 	 * @return true
 	 */
 	public boolean setNumStudents(int numStudents) {
@@ -139,6 +150,34 @@ public class Course {
 			this.instructorID = instructorID;
 			return true;
 		}
+	}
+
+	/**
+	 * Set the grade book ID
+	 *
+	 * @return true
+	 */
+	public boolean setGradeBookID() {
+		if (this.courseID.equals("")) {
+			throw new NullPointerException("Course ID does not exist");
+		} else {
+			this.gradeBookID = "G" + this.courseID;
+			return true;
+		}
+	}
+
+	/**
+	 * Method to write the course info to the file
+	 *
+	 * @return string of course attributes
+	 */
+	public String writeCourseToFile() {
+		String output = "";
+
+		output += this.courseID + "," + this.courseTitle + "," + Integer.toString(this.numStudents) + ","
+				+ Integer.toString(this.instructorID) + "," + this.gradeBookID;
+
+		return output;
 	}
 
 	/*
