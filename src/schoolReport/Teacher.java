@@ -67,6 +67,13 @@ public class Teacher extends Person {
 	}
 
 	/**
+	 * Method used to add new course to student courseList
+	 */
+	public void addCourseToList(String courseID) {
+		this.courseIDS.add(courseID);
+	}
+
+	/**
 	 * Get the list of course IDs as a String separated with a delimiter comma
 	 *
 	 * @return String with course IDs separated by comma

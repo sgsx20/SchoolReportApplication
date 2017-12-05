@@ -76,6 +76,13 @@ public class Student extends Person {
 	}
 
 	/**
+	 * Method used to add new course to student courseList
+	 */
+	public void addCourseToList(String courseID) {
+		this.courseIDS.add(courseID);
+	}
+
+	/**
 	 * Set grade level of student
 	 *
 	 * @param gradeLevel

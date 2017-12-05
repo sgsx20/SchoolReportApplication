@@ -44,12 +44,12 @@ public class Parent extends Person {
 			String phoneNumber, LinkedList<Integer> studentIds) {
 		super(userId, password, firstName, lastName, emailAddress, phoneNumber);
 
-		if (!studentIds.isEmpty()) {
-			this.studentIds = new LinkedList<>();
-			this.studentIds.addAll(studentIds);
-		} else {
-			throw new IllegalArgumentException("Parent was not created.");
-		}
+		if (studentIds == null) {
+			   this.studentIds = new LinkedList<>();
+			  } else {
+			   this.studentIds = new LinkedList<>();
+			   this.studentIds.addAll(studentIds);
+			  }
 
 	}
 

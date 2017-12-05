@@ -1,5 +1,4 @@
-3,pass,Lonzo,Ball,lzo@gmail.com,444-222-1111,
-3,pass,Lonzo,Ball,lzo@gmail.com,444-222-1111,
+1000,Password,Ehsan,Baig,email@email.com,333-333-3333,
 3,pass,Lonzo,Ball,lzo@gmail.com,444-222-1111,
 3,pass,Lonzo,Ball,lzo@gmail.com,444-222-1111,
 3,pass,Lonzo,Ball,lzo@gmail.com,444-222-1111,

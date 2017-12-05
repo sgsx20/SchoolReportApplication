@@ -17,6 +17,16 @@ import javax.swing.JOptionPane;
  * @author Shreejesh Shrestha
  *
  */
+
+/*Group 4 Phase V
+*
+* 		Team Members:
+*
+* - Shreejesh Shrestha
+* - Adonai Orellana
+* - Ehsan Baig
+*
+*/
 public class FileManager {
 
 	/**
@@ -141,7 +151,7 @@ public class FileManager {
 		case "Teacher":
 			LinkedList<String> courseList = new LinkedList<>();
 
-			String[] courseListSplit = recordLine[8].split("-");
+			String[] courseListSplit = recordLine[7].split("-");
 
 			for (int x = 0; x < courseListSplit.length; x++) {
 				courseList.add(courseListSplit[x]);
@@ -315,7 +325,10 @@ public class FileManager {
 	}
 
 	/**
-	 * Method to add a new user to the file
+	 * Method to add a new user to the file - appropriate file is open
+	 * based on the user type and the new user is appended to the records file.
+	 * 
+	 * After processing is complete, the file(s) are closed. 
 	 *
 	 * @param userToAdd
 	 *            -> User object to add
@@ -538,7 +551,8 @@ public class FileManager {
 									while (it.hasNext()) {
 										temp += it.next();
 									}
-
+									
+									
 									bw.write(replaceSplit[0] + "," + temp);
 									bw.newLine();
 								}
@@ -598,10 +612,9 @@ public class FileManager {
 		return output;
 	}
 
-	// =============== Ehsan, Add Comments for method below =====================
 
 	/**
-	 * This method will return a user based on the parameters.
+	 * This method will return a user based on the type and userID input.
 	 *
 	 * @param -
 	 *            userType is of type String, holds the type of object requested.
@@ -612,7 +625,8 @@ public class FileManager {
 		Person getUser = null;
 		String filePath = getFilePath(userType);
 		BufferedReader br = null;
-
+		
+		// open file based on usertype selected and search for user with the matching ID
 		try {
 			br = new BufferedReader(new FileReader(new File(filePath)));
 			String hasLine = null;
@@ -621,13 +635,16 @@ public class FileManager {
 
 				// array to hold record details
 				String[] split = line.split(",");
-
+				
+				// store record ID
 				int id = Integer.parseInt(split[0]);
-
+				
+				// check if IDs match, if true store record into object
 				if (userId == id) {
 					getUser = getUserObject(userType, split);
 				}
 			}
+			// close buffer reader
 			br.close();
 
 		} catch (FileNotFoundException ex) {
@@ -635,12 +652,17 @@ public class FileManager {
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
+		
+		// return created user Object
 		return getUser;
 	}
 
 	/**
 	 * This method will use the user type and user object to modify user info and
-	 * update the user record to reflect the changes.
+	 * update the user record to reflect the changes. Each record is written to a new
+	 * file until the matching record is found, if found - the record is updated and
+	 * file processing continues. Old file is disgarded and new temp file name is changed 
+	 * to match records.
 	 *
 	 * @param -
 	 *            lookupType is of type String, holds the type of object to modify.
@@ -667,24 +689,29 @@ public class FileManager {
 
 			String hasLine = null;
 
+			
+			// check records for matching user
 			while (((hasLine = br.readLine()) != null)) {
 				String line = hasLine;
 				String[] split = line.split(",");
-
+				
 				int id = Integer.parseInt(split[0]);
-
+				
+				// check record id against object passed
 				if (userToUpdate.getUserID() == id) {
 					getUser = userToUpdate;
-					bw.write(getUser.toString());
+					bw.write(getUser.writeAttributesToFile());
 					bw.newLine();
 				} else {
 					bw.write(line);
 					bw.newLine();
 				}
 			}
-
+			
+			// close buffer - read and write
 			br.close();
 			bw.close();
+			// delete old file and rename new
 			path.delete();
 			tempFile.renameTo(path);
 		} catch (FileNotFoundException ex) {
@@ -735,13 +762,22 @@ public class FileManager {
 
 		return newID;
 	}
+	
+	
+	/*
+	 * This method returns a student's grades for the course requested
+	 * 
+	 * @param : courseID - course user is signed up for
+	 * 			userID - ID used to search in the course
+	 */
 
 	public static String getCourseGrade(String courseID, int userID) {
 		BufferedReader br = null;
 		String gradeBookID = "";
 		String output = "";
 		boolean found = false;
-
+		
+		// create buffer reader to parse file
 		try {
 
 			br = new BufferedReader(new FileReader(new File("./src/schoolReport/Courses.txt")));
@@ -750,9 +786,11 @@ public class FileManager {
 				String line = hasLine;
 
 				String[] split = line.split(",");
-
+				
+				// file course id
 				String storedID = split[0];
 
+				// if a matching course is found, return the gradebook id to look for grades
 				if (courseID.equalsIgnoreCase(storedID)) {
 					gradeBookID = "G" + courseID;
 					String readGradeBook = getGradeBookRecords(gradeBookID);
@@ -783,6 +821,7 @@ public class FileManager {
 			if (found == true) {
 				output = "No grades available for this course!";
 			}
+			// close file
 			br.close();
 
 		} catch (FileNotFoundException ex) {
@@ -793,6 +832,12 @@ public class FileManager {
 		return output;
 	}
 
+	
+	/*
+	 * This method will return a string record of all student records (id, midterm and final)
+	 * 
+	 * @param: gradeBookID - ID of gradebook to search for in Gradebook.txt file
+	 */
 	public static String getGradeBookRecords(String gradeBookID) {
 		BufferedReader br = null;
 		String output = "";
@@ -828,7 +873,15 @@ public class FileManager {
 
 		return output;
 	}
-
+	
+	
+	/*
+	 * This method returns a GradeBook object based on the ID entered. 
+	 * It will use the record returned by the getGradeBookRecords method and parse the 
+	 * string into student records and store them in an object
+	 * 
+	 * @param: 
+	 */
 	public static GradeBook getGradeBook(String gBookID) {
 		GradeBook gBook = null;
 
@@ -848,11 +901,22 @@ public class FileManager {
 		// return object
 		return gBook;
 	}
+	
+	
+	/*
+	 * This method will update the Gradebook file to reflect changes in the 
+	 * parameter GradeBook. 
+	 * 
+	 * @param: updateBook - grade book object that hold modified records
+	 */
 
 	public static void updateGradeBookFile(GradeBook updateBook) {
 		BufferedReader br = null;
 		BufferedWriter bw = null;
-
+		
+		
+		// open file to read and store all records old and new into temp file
+		// delete old file and rename new
 		try {
 			File path = new File("./src/schoolReport/GradeBook.txt");
 			FileReader reader = new FileReader(path);
@@ -865,9 +929,7 @@ public class FileManager {
 			String hasLine = null;
 
 			while (((hasLine = br.readLine()) != null)) {
-
 				String line = hasLine;
-
 				String[] split = line.split(",");
 
 				if (split[0].equalsIgnoreCase(updateBook.getGradeBookID())) {
@@ -879,6 +941,7 @@ public class FileManager {
 				}
 			}
 
+			// close buffered reader and writer after updates and delete old file
 			br.close();
 			bw.close();
 			path.delete();
@@ -889,7 +952,13 @@ public class FileManager {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 	}
-
+	
+	
+	/*
+	 * Method is used to overwrite Course.txt file with updates
+	 * 
+	 * @param List of all courses - used in creating updated file
+	 */
 	public static void updateCourseFile(LinkedList<Course> updateCourseList) {
 		BufferedWriter bw = null;
 
@@ -905,7 +974,7 @@ public class FileManager {
 			String fileInput = "";
 
 			while (it.hasNext()) {
-				fileInput += it.next().writeCourseToFile();
+				fileInput = it.next().writeCourseToFile();
 				bw.write(fileInput);
 				bw.newLine();
 			}

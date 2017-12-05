@@ -51,7 +51,7 @@ public class GradeBook {
 	public boolean addStudent(int studID) {
 		String record = "";
 		if ((studentGrades.size() < Course.NUM_OF_STUDENTS_MAX) && (studID > 0)) {
-			record = "[" + Integer.toString(studID) + ", " + ", " + "]";
+			record = Integer.toString(studID) + "-" + "-" + "--";
 			this.studentGrades.add(record);
 			return true;
 		}
@@ -59,6 +59,7 @@ public class GradeBook {
 		return false;
 
 	}
+
 
 	/**
 	 * Get the gradebook ID

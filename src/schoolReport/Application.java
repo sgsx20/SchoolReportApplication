@@ -6,10 +6,7 @@ import java.util.ListIterator;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-/*
- * @author Shreejesh Shrestha
- *
- *	Group 4 Phase V
+/*Group 4 Phase V
  *
  * 		Team Members:
  *
@@ -26,27 +23,6 @@ public class Application {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		LinkedList<String> courseIDs = new LinkedList<>();
-		courseIDs.add("IT100");
-		courseIDs.add("IT200");
-
-		Student s1 = new Student(1, "pass", "jacob", "smith", "email@gmail.com", "202-222-1234", 10, courseIDs);
-		FileManager.addNewUserToFile(s1);
-
-		LinkedList<Integer> studentIDs = new LinkedList<>();
-		studentIDs.add(1);
-
-		Parent p1 = new Parent(2, "parent", "Bob", "Johns", "test@gmail.com", "212-222-9987", studentIDs);
-		FileManager.addNewUserToFile(p1);
-
-		Teacher t1 = new Teacher(3, "pass", "Lonzo", "Ball", "lzo@gmail.com", "444-222-1111", "Monday(11:00AM - 1:PM)",
-				courseIDs);
-		FileManager.addNewUserToFile(t1);
-
-		Administrator a1 = new Administrator(3, "pass", "Lonzo", "Ball", "lzo@gmail.com", "444-222-1111");
-		FileManager.addNewUserToFile(a1);
-
 		JDialog.setDefaultLookAndFeelDecorated(true);
 
 		String userType = "";
@@ -607,9 +583,11 @@ public class Application {
 				selection = "Exit";
 			}
 
-			// switch case for user selection of tasks they wish to execute
-			// lookupType stores the type of user account the logged user wishes to interact
-			// with
+			/*
+			 * switch case for user selection of tasks they wish to execute 
+			 * lookupType stores the type of user account the logged user wishes to interact
+			 * with
+			 */
 			switch (selection) {
 			case "View Account":
 				lookupType = promptForUserType();
@@ -636,7 +614,6 @@ public class Application {
 				JOptionPane.showMessageDialog(null, "Something went wrong");
 			}
 		} while (keepGoing);
-
 	}
 
 	/**
@@ -652,9 +629,11 @@ public class Application {
 	 */
 	public static void populateUserDetails(Teacher newUser) {
 		boolean valid = false;
+		
+		// loop until a valid input is received for teacher's office hours
 		do {
 			try {
-				valid = newUser.setOfficeHours(JOptionPane.showInputDialog("Assign teacher's office hours: "));
+				valid = newUser.setOfficeHours(JOptionPane.showInputDialog("Assign teacher's office hours - Format: Day(time - time)"));
 			} catch (IllegalArgumentException e) {
 				JOptionPane.showMessageDialog(null, e.getMessage());
 			} catch (Exception e) {
@@ -662,8 +641,71 @@ public class Application {
 			}
 		} while (!valid);
 		valid = false;
+		
+		// course selection process, teacher user may be assigned up to 4 courses to instruct
+		// parse course file and return objects
+		LinkedList<Course> coursesOffered = new LinkedList<>();
+		coursesOffered = FileManager.getCourseList();
 
-		// courses
+		// get list of courses offered
+		String[] options = new String[coursesOffered.size() + 1];
+
+		// fill options array
+		for (int x = 0; x < (options.length - 1); x++) {
+			options[x] = coursesOffered.get(x).getCourseID();
+		}
+		
+		// add EXIT as last option
+		options[options.length - 1] = "Exit";
+
+		// variable to control loop structure
+		boolean addMore = true;
+		
+		// number of courses that the teacher is assigned to
+		int courseCount = 0;
+
+		// continue prompting for course selection until the user is done
+		// or max selections is reached
+		do {
+			Object result = JOptionPane.showInputDialog(null, "Select Course", "", JOptionPane.QUESTION_MESSAGE, null,
+					options, options[0]);
+
+			String courseSelected = (String) result;
+			int index = 0;
+			
+			// if user select "Exit" - terminate functionality
+			if (courseSelected.equals("Exit")) {
+				addMore = false;
+			} else {
+				// check if "Cancel" was hit
+				if ((courseSelected != null) && (addMore)) {
+					// get index of the selection
+					index = 0;
+					boolean found = false;
+					
+					do {
+						if (coursesOffered.get(index).getCourseID().equals(courseSelected)) {
+							found = true;
+						} else {
+							index++;
+						}
+					} while (!found && (index < coursesOffered.size()));
+
+					if (found) {
+						// teacher to Course
+						coursesOffered.get(index).setInstructorID(newUser.getUserID());
+						newUser.addCourseToList(courseSelected);
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Done adding courses!");
+				}
+			}
+
+		} while (addMore && (courseCount < 4));
+		
+		// write updated course info to file
+		FileManager.updateCourseFile(coursesOffered);
+
 	}
 
 	/**
@@ -675,6 +717,8 @@ public class Application {
 	 */
 	public static void populateUserDetails(Student newUser) {
 		boolean valid = false;
+		GradeBook getBook = new GradeBook();
+		
 		do {
 			try {
 				valid = newUser
@@ -688,16 +732,10 @@ public class Application {
 			}
 		} while (!valid);
 
-		/////////////////////////////////////////////////
-		//////////////// Add to application
-		/////////////////////////////////////////////////
-
 		// Course selection
 		// parse course file and return objects
 		LinkedList<Course> coursesOffered = new LinkedList<>();
 		coursesOffered = FileManager.getCourseList();
-
-		JOptionPane.showMessageDialog(null, coursesOffered.toString());
 
 		// get list of courses offered
 		String[] options = new String[coursesOffered.size() + 1];
@@ -741,24 +779,22 @@ public class Application {
 						int courseSize = coursesOffered.get(index).getNumStudents();
 
 						if (courseSize < Course.NUM_OF_STUDENTS_MAX) {
-							//////////
-							/////////////////////
+
 							// add student to gradebook
 							String gBookID = coursesOffered.get(index).getGradeBookID();
-							GradeBook getBook = FileManager.getGradeBook(gBookID);
+							
+							getBook = FileManager.getGradeBook(gBookID);
 
 							if (getBook != null) {
 								boolean addedStudent = getBook.addStudent(newUser.getUserID());
 								if (addedStudent) {
 									// increment courseSize++ and update
 									courseCount++;
-									coursesOffered.get(index).setNumStudents(courseCount);
+									courseSize++;
+									coursesOffered.get(index).setNumStudents(courseSize);
+									
+									newUser.addCourseToList(courseSelected);
 
-									// rewrite GradeBook record
-									FileManager.updateGradeBookFile(getBook);
-
-									// rewrite Course record
-									FileManager.updateCourseFile(coursesOffered);
 								}
 							}
 						} else {
@@ -771,14 +807,20 @@ public class Application {
 			}
 
 		} while (addMore && (courseCount < 8));
+		
+		// rewrite GradeBook record
+		FileManager.updateGradeBookFile(getBook);
+
+		// rewrite Course record
+		FileManager.updateCourseFile(coursesOffered);
+		
 	}
 
 	/**
-	 * This method adds the detail properties of the Parent class.
-	 *
-	 * @param -
-	 *            newUser: type Parent, used to update list of child(ren) for the
-	 *            parent.
+	 * This method adds the detail properties of the Parent class. 
+	 * These include general user properties as well as the list of children for the parent
+	 * @param - newUser: type Parent, used to update list of child(ren) for the
+	 * parent.
 	 */
 	public static void populateUserDetails(Parent newUser) {
 		LinkedList<Integer> childrenIDs = new LinkedList<>();
@@ -841,19 +883,53 @@ public class Application {
 			} catch (NullPointerException e) {
 				JOptionPane.showMessageDialog(null, "Please enter a password, must not be empty!");
 			}
+			catch(IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
 			if (!valid) {
 				JOptionPane.showMessageDialog(null, "Please enter a valid password");
 			}
 		} while (!valid);
+		
 		valid = false;
 
 		// input user info - will loop until all values are properly set
 		do {
 			try {
 				newUser.setFirstName(JOptionPane.showInputDialog("Enter user's first name."));
+				valid = true;
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		} while (!valid);
+		valid = false;
+		
+		
+		do {
+			try {
 				newUser.setLastName(JOptionPane.showInputDialog("Enter user's last name."));
+				valid = true;
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		} while (!valid);
+		valid = false;
+		
+		
+		do {
+			try {
 				newUser.setEmailAddress(
 						JOptionPane.showInputDialog("Enter user's email address in format: 'user@provider.domain'."));
+				valid = true;
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		} while (!valid);
+		valid = false;
+		
+		
+		do {
+			try {
 				newUser.setPhoneNumber(
 						JOptionPane.showInputDialog("Enter user's phone number in format: '(xxx)-xxx-xxxx'."));
 				valid = true;
@@ -862,6 +938,10 @@ public class Application {
 			}
 		} while (!valid);
 		valid = false;
+		
+		/*
+		 * Based on the class instance of the object further properties will be filled
+		 */
 
 		if (newUser instanceof Parent) {
 			populateUserDetails((Parent) newUser);
@@ -878,6 +958,7 @@ public class Application {
 		FileManager.addNewUserToFile(newUser);
 	}
 
+	
 	/**
 	 * This method will add a new user into records.
 	 *

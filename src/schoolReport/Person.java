@@ -130,11 +130,10 @@ public abstract class Person {
 	 * @return true or false
 	 */
 	public boolean setPassword(String password) {
-		boolean valid = false;
 		if (!password.equals("")) {
 			if (isValidPassword(password)) {
 				this.password = password;
-				return valid;
+				return true;
 			} else {
 				throw new IllegalArgumentException("Password isn't valid");
 			}
